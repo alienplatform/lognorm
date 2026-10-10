@@ -1,0 +1,41 @@
+[package]
+name = "lognorm"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+description = "Automatic structured log normalization with preserved application fields"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/alienplatform/lognorm"
+readme = "README.md"
+keywords = ["logging", "parser", "structured-logging", "observability", "json"]
+categories = ["parser-implementations", "development-tools::debugging"]
+include = ["/src/**", "/examples/normalize.rs", "/docs/**", "/README.md", "/LICENSE-*", "/Cargo.toml", "/Cargo.lock"]
+
+[features]
+default = []
+otlp = ["dep:opentelemetry-proto"]
+
+[dependencies]
+anstyle-parse = { version = "1", default-features = false }
+chrono = { version = "0.4", default-features = false, features = ["std"] }
+serde = "1"
+serde_json = { version = "1", features = ["arbitrary_precision"] }
+opentelemetry-proto = { version = "0.31", optional = true, default-features = false, features = ["gen-tonic-messages", "logs"] }
+
+[dev-dependencies]
+bigdecimal = "0.4"
+criterion = "0.5"
+proptest = "1"
+stats_alloc = "0.1.10"
+prost = "0.14"
+
+[[bench]]
+name = "normalize"
+harness = false
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "deny"
+
+[lints.clippy]
+all = "warn"

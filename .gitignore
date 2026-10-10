@@ -1,0 +1,12 @@
+/target/
+**/node_modules/
+**/.venv/
+**/__pycache__/
+/compatibility/rust/target/
+/proptest-regressions/
+/fuzz/target/
+/fuzz/corpus/
+/fuzz/artifacts/
+
+/compatibility/go/producer
+/compatibility/version-results/

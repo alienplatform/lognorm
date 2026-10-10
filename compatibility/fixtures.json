@@ -1,0 +1,647 @@
+[
+  {
+    "runtime": "node",
+    "scenario": "pino-default",
+    "expected": {
+      "message": "example pino-default",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":40,\"time\":1700000000123,\"pid\":42,\"hostname\":\"example-host\",\"scenario\":\"pino-default\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example pino-default\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "pino-uppercase",
+    "expected": {
+      "message": "example pino-uppercase",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":\"WARN\",\"time\":1700000000123,\"pid\":42,\"hostname\":\"example-host\",\"scenario\":\"pino-uppercase\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example pino-uppercase\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "pino-iso",
+    "expected": {
+      "message": "example pino-iso",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":40,\"time\":\"2023-11-14T22:13:20.123Z\",\"pid\":42,\"hostname\":\"example-host\",\"scenario\":\"pino-iso\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example pino-iso\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "pino-child",
+    "expected": {
+      "message": "example pino-child",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":40,\"time\":1700000000123,\"pid\":42,\"hostname\":\"example-host\",\"component\":\"synthetic\",\"scenario\":\"pino-child\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example pino-child\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "pino-error",
+    "expected": {
+      "message": "example pino-error",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":40,\"time\":1700000000123,\"pid\":42,\"hostname\":\"example-host\",\"scenario\":\"pino-error\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"err\":{\"type\":\"Error\",\"message\":\"synthetic failure\",\"stack\":\"Error: synthetic failure\\n    at file:///source/lognorm/compatibility/node/producer.mjs:13:15\\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)\\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\"},\"msg\":\"example pino-error\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "pino-no-time",
+    "expected": {
+      "message": "example pino-no-time",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": false,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":40,\"pid\":42,\"hostname\":\"example-host\",\"scenario\":\"pino-no-time\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example pino-no-time\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "pino-message-key",
+    "expected": {
+      "message": "example pino-message-key",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":40,\"time\":1700000000123,\"pid\":42,\"hostname\":\"example-host\",\"scenario\":\"pino-message-key\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"message\":\"example pino-message-key\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "pino-base-null",
+    "expected": {
+      "message": "example pino-base-null",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":40,\"time\":1700000000123,\"scenario\":\"pino-base-null\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example pino-base-null\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "pino-custom-level",
+    "expected": {
+      "message": "example pino-custom-level",
+      "severity": null,
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":35,\"time\":1700000000123,\"pid\":42,\"hostname\":\"example-host\",\"scenario\":\"pino-custom-level\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example pino-custom-level\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "pino-multistream",
+    "expected": {
+      "message": "example pino-multistream",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":40,\"time\":1700000000123,\"pid\":42,\"hostname\":\"example-host\",\"scenario\":\"pino-multistream\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example pino-multistream\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "pino-mixin",
+    "expected": {
+      "message": "example pino-mixin",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":40,\"time\":1700000000123,\"pid\":42,\"hostname\":\"example-host\",\"component\":\"synthetic\",\"scenario\":\"pino-mixin\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example pino-mixin\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "pino-nested-key",
+    "expected": {
+      "message": "example pino-nested-key",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "data",
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":40,\"time\":1700000000123,\"pid\":42,\"hostname\":\"example-host\",\"data\":{\"scenario\":\"pino-nested-key\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true}},\"msg\":\"example pino-nested-key\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "winston-json",
+    "expected": {
+      "message": "example winston-json",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": false,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":\"warn\",\"message\":\"example winston-json\",\"payload\":{\"enabled\":true,\"items\":[true,null,7,\"λ\"],\"nested\":{\"path\":\"/example\",\"statusCode\":401}},\"scenario\":\"winston-json\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "winston-time",
+    "expected": {
+      "message": "example winston-time",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":\"warn\",\"message\":\"example winston-time\",\"payload\":{\"enabled\":true,\"items\":[true,null,7,\"λ\"],\"nested\":{\"path\":\"/example\",\"statusCode\":401}},\"scenario\":\"winston-time\",\"timestamp\":\"2023-11-14T22:13:20.123Z\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "winston-metadata",
+    "expected": {
+      "message": "example winston-metadata",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": false,
+      "payloadPath": [
+        "metadata",
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":\"warn\",\"message\":\"example winston-metadata\",\"metadata\":{\"payload\":{\"enabled\":true,\"items\":[true,null,7,\"λ\"],\"nested\":{\"path\":\"/example\",\"statusCode\":401}},\"scenario\":\"winston-metadata\"}}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "winston-error",
+    "expected": {
+      "message": "example winston-error",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": false,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"level\":\"warn\",\"message\":\"example winston-error\",\"payload\":{\"enabled\":true,\"items\":[true,null,7,\"λ\"],\"nested\":{\"path\":\"/example\",\"statusCode\":401}},\"scenario\":\"winston-error\",\"stack\":\"Error: example winston-error\\n    at file:///source/lognorm/compatibility/node/producer.mjs:13:15\\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)\\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\"}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "winston-text",
+    "expected": {
+      "message": "example winston-text",
+      "severity": null,
+      "structured": false,
+      "timestamp": false,
+      "payloadPath": null,
+      "payloadIsString": false
+    },
+    "input": "example winston-text"
+  },
+  {
+    "runtime": "node",
+    "scenario": "bunyan-default",
+    "expected": {
+      "message": "example bunyan-default",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"name\":\"synthetic\",\"hostname\":\"example-host\",\"pid\":42,\"level\":40,\"scenario\":\"bunyan-default\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example bunyan-default\",\"time\":\"2026-10-10T04:25:27.245Z\",\"v\":0}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "bunyan-child",
+    "expected": {
+      "message": "example bunyan-child",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"name\":\"synthetic\",\"hostname\":\"example-host\",\"pid\":54345,\"component\":\"synthetic\",\"level\":40,\"scenario\":\"bunyan-child\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example bunyan-child\",\"time\":\"2026-10-10T04:25:27.784Z\",\"v\":0}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "bunyan-error",
+    "expected": {
+      "message": "example bunyan-error",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"name\":\"synthetic\",\"hostname\":\"example-host\",\"pid\":42,\"level\":40,\"scenario\":\"bunyan-error\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"err\":{\"message\":\"synthetic failure\",\"name\":\"Error\",\"stack\":\"Error: synthetic failure\\n    at file:///source/lognorm/compatibility/node/producer.mjs:13:15\\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)\\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\"},\"msg\":\"example bunyan-error\",\"time\":\"2026-10-10T04:25:28.237Z\",\"v\":0}"
+  },
+  {
+    "runtime": "node",
+    "scenario": "console-text",
+    "expected": {
+      "message": "example console-text",
+      "severity": null,
+      "structured": false,
+      "timestamp": false,
+      "payloadPath": null,
+      "payloadIsString": false
+    },
+    "input": "example console-text"
+  },
+  {
+    "runtime": "python",
+    "scenario": "python-json",
+    "expected": {
+      "message": "example python-json",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": false,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"levelname\": \"WARNING\", \"levelno\": 30, \"message\": \"example python-json\", \"scenario\": \"python-json\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}}"
+  },
+  {
+    "runtime": "python",
+    "scenario": "python-renamed",
+    "expected": {
+      "message": "example python-renamed",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": false,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"severity\": \"WARNING\", \"msg\": \"example python-renamed\", \"scenario\": \"python-renamed\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}}"
+  },
+  {
+    "runtime": "python",
+    "scenario": "python-error",
+    "expected": {
+      "message": "example python-error",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": false,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"levelname\": \"WARNING\", \"levelno\": 30, \"message\": \"example python-error\", \"exc_info\": \"Traceback (most recent call last):\\n  File \\\"/source/lognorm/compatibility/python/producer.py\\\", line 40, in <module>\\n    raise ValueError(\\\"synthetic failure\\\")\\nValueError: synthetic failure\", \"scenario\": \"python-error\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}}"
+  },
+  {
+    "runtime": "python",
+    "scenario": "python-text",
+    "expected": {
+      "message": "example python-text",
+      "severity": null,
+      "structured": false,
+      "timestamp": false,
+      "payloadPath": null,
+      "payloadIsString": false
+    },
+    "input": "example python-text"
+  },
+  {
+    "runtime": "python",
+    "scenario": "structlog-json",
+    "expected": {
+      "message": "example structlog-json",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": false,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"scenario\": \"structlog-json\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}, \"event\": \"example structlog-json\", \"level\": \"warning\"}"
+  },
+  {
+    "runtime": "python",
+    "scenario": "structlog-time",
+    "expected": {
+      "message": "example structlog-time",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"scenario\": \"structlog-time\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}, \"event\": \"example structlog-time\", \"level\": \"warning\", \"timestamp\": \"2026-10-10T04:25:30.245814Z\"}"
+  },
+  {
+    "runtime": "python",
+    "scenario": "structlog-error",
+    "expected": {
+      "message": "example structlog-error",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": false,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"scenario\": \"structlog-error\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}, \"event\": \"example structlog-error\", \"level\": \"warning\", \"exception\": \"Traceback (most recent call last):\\n  File \\\"/source/lognorm/compatibility/python/producer.py\\\", line 59, in <module>\\n    raise ValueError(\\\"synthetic failure\\\")\\nValueError: synthetic failure\"}"
+  },
+  {
+    "runtime": "python",
+    "scenario": "loguru-json",
+    "expected": {
+      "message": "example loguru-json",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "record",
+        "extra",
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"text\": \"example loguru-json\\n\", \"record\": {\"elapsed\": {\"repr\": \"0:00:00.012073\", \"seconds\": 0.012073}, \"exception\": null, \"extra\": {\"scenario\": \"loguru-json\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"λ\"], \"enabled\": true}}, \"file\": {\"name\": \"producer.py\", \"path\": \"/source/lognorm/compatibility/python/producer.py\"}, \"function\": \"<module>\", \"level\": {\"icon\": \"⚠️\", \"name\": \"WARNING\", \"no\": 30}, \"line\": 86, \"message\": \"example loguru-json\", \"module\": \"producer\", \"name\": \"__main__\", \"process\": {\"id\": 54886, \"name\": \"MainProcess\"}, \"thread\": {\"id\": 8323070656, \"name\": \"MainThread\"}, \"time\": {\"repr\": \"2026-10-10 07:25:30.678200+03:00\", \"timestamp\": 1791606330.6782}}}"
+  },
+  {
+    "runtime": "python",
+    "scenario": "loguru-time-exponent",
+    "expected": {
+      "message": "example loguru-time-exponent",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "record",
+        "extra",
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"text\": \"example loguru-time-exponent\\n\", \"record\": {\"elapsed\": {\"repr\": \"0:00:00.014921\", \"seconds\": 0.014921}, \"exception\": null, \"extra\": {\"scenario\": \"loguru-time-exponent\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"λ\"], \"enabled\": true}}, \"file\": {\"name\": \"producer.py\", \"path\": \"/source/lognorm/compatibility/python/producer.py\"}, \"function\": \"<module>\", \"level\": {\"icon\": \"⚠️\", \"name\": \"WARNING\", \"no\": 30}, \"line\": 86, \"message\": \"example loguru-time-exponent\", \"module\": \"producer\", \"name\": \"__main__\", \"process\": {\"id\": 54918, \"name\": \"MainProcess\"}, \"thread\": {\"id\": 8323070656, \"name\": \"MainThread\"}, \"time\": {\"repr\": \"1970-01-01 00:00:00.000001+00:00\", \"timestamp\": 1e-06}}}"
+  },
+  {
+    "runtime": "python",
+    "scenario": "loguru-error",
+    "expected": {
+      "message": "example loguru-error",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "record",
+        "extra",
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"text\": \"example loguru-error\\nTraceback (most recent call last):\\n  File \\\"/source/lognorm/compatibility/python/producer.py\\\", line 82, in <module>\\n    raise ValueError(\\\"synthetic failure\\\")\\nValueError: synthetic failure\\n\", \"record\": {\"elapsed\": {\"repr\": \"0:00:00.018793\", \"seconds\": 0.018793}, \"exception\": {\"type\": \"ValueError\", \"value\": \"synthetic failure\", \"traceback\": true}, \"extra\": {\"scenario\": \"loguru-error\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"λ\"], \"enabled\": true}}, \"file\": {\"name\": \"producer.py\", \"path\": \"/source/lognorm/compatibility/python/producer.py\"}, \"function\": \"<module>\", \"level\": {\"icon\": \"⚠️\", \"name\": \"WARNING\", \"no\": 30}, \"line\": 84, \"message\": \"example loguru-error\", \"module\": \"producer\", \"name\": \"__main__\", \"process\": {\"id\": 54960, \"name\": \"MainProcess\"}, \"thread\": {\"id\": 8323070656, \"name\": \"MainThread\"}, \"time\": {\"repr\": \"2026-10-10 07:25:31.066675+03:00\", \"timestamp\": 1791606331.066675}}}"
+  },
+  {
+    "runtime": "python",
+    "scenario": "loguru-text",
+    "expected": {
+      "message": "example loguru-text",
+      "severity": null,
+      "structured": false,
+      "timestamp": false,
+      "payloadPath": null,
+      "payloadIsString": false
+    },
+    "input": "example loguru-text"
+  },
+  {
+    "runtime": "rust",
+    "scenario": "tracing-nested",
+    "expected": {
+      "message": "example tracing-nested",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "fields",
+        "payload"
+      ],
+      "payloadIsString": true
+    },
+    "input": "{\"timestamp\":\"2026-10-10T04:25:31.337733Z\",\"level\":\"WARN\",\"fields\":{\"message\":\"example tracing-nested\",\"scenario\":\"tracing-nested\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true},\"target\":\"lognorm_compatibility_producers\"}"
+  },
+  {
+    "runtime": "rust",
+    "scenario": "tracing-flat",
+    "expected": {
+      "message": "example tracing-flat",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": true
+    },
+    "input": "{\"timestamp\":\"2026-10-10T04:25:31.363244Z\",\"level\":\"WARN\",\"message\":\"example tracing-flat\",\"scenario\":\"tracing-flat\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true,\"target\":\"lognorm_compatibility_producers\"}"
+  },
+  {
+    "runtime": "rust",
+    "scenario": "tracing-span",
+    "expected": {
+      "message": "example tracing-span",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "fields",
+        "payload"
+      ],
+      "payloadIsString": true
+    },
+    "input": "{\"timestamp\":\"2026-10-10T04:25:31.393082Z\",\"level\":\"WARN\",\"fields\":{\"message\":\"example tracing-span\",\"scenario\":\"tracing-span\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true},\"target\":\"lognorm_compatibility_producers\",\"span\":{\"component\":\"synthetic\",\"name\":\"operation\"},\"spans\":[{\"component\":\"synthetic\",\"name\":\"operation\"}]}"
+  },
+  {
+    "runtime": "rust",
+    "scenario": "tracing-no-time",
+    "expected": {
+      "message": "example tracing-no-time",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": false,
+      "payloadPath": [
+        "fields",
+        "payload"
+      ],
+      "payloadIsString": true
+    },
+    "input": "{\"level\":\"WARN\",\"fields\":{\"message\":\"example tracing-no-time\",\"scenario\":\"tracing-no-time\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true},\"target\":\"lognorm_compatibility_producers\"}"
+  },
+  {
+    "runtime": "rust",
+    "scenario": "tracing-no-target",
+    "expected": {
+      "message": "example tracing-no-target",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "fields",
+        "payload"
+      ],
+      "payloadIsString": true
+    },
+    "input": "{\"timestamp\":\"2026-10-10T04:25:31.453122Z\",\"level\":\"WARN\",\"fields\":{\"message\":\"example tracing-no-target\",\"scenario\":\"tracing-no-target\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true}}"
+  },
+  {
+    "runtime": "rust",
+    "scenario": "tracing-flat-span",
+    "expected": {
+      "message": "example tracing-flat-span",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": true
+    },
+    "input": "{\"timestamp\":\"2026-10-10T04:25:31.479760Z\",\"level\":\"WARN\",\"message\":\"example tracing-flat-span\",\"scenario\":\"tracing-flat-span\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true,\"target\":\"lognorm_compatibility_producers\",\"span\":{\"component\":\"synthetic\",\"name\":\"operation\"},\"spans\":[{\"component\":\"synthetic\",\"name\":\"operation\"}]}"
+  },
+  {
+    "runtime": "rust",
+    "scenario": "tracing-text",
+    "expected": {
+      "message": "example tracing-text",
+      "severity": null,
+      "structured": false,
+      "timestamp": false,
+      "payloadPath": null,
+      "payloadIsString": true
+    },
+    "input": " WARN lognorm_compatibility_producers: example tracing-text scenario=\"tracing-text\" payload=Object {\"enabled\": Bool(true), \"items\": Array [Bool(true), Null, Number(7), String(\"λ\")], \"nested\": Object {\"path\": String(\"/example\"), \"statusCode\": Number(401)}} status_code=401 enabled=true"
+  },
+  {
+    "runtime": "rust",
+    "scenario": "env-logger-text",
+    "expected": {
+      "message": "example env-logger-text",
+      "severity": null,
+      "structured": false,
+      "timestamp": false,
+      "payloadPath": null,
+      "payloadIsString": false
+    },
+    "input": "[2026-10-10T04:25:31Z WARN  lognorm_compatibility_producers] example env-logger-text"
+  },
+  {
+    "runtime": "go",
+    "scenario": "hclog-json",
+    "expected": {
+      "message": "example hclog-json",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"@level\":\"warn\",\"@message\":\"example hclog-json\",\"@module\":\"synthetic\",\"@timestamp\":\"2023-11-14T22:13:20.123000Z\",\"payload\":{\"enabled\":true,\"items\":[true,null,7,\"λ\"],\"nested\":{\"path\":\"/example\",\"statusCode\":401}},\"scenario\":\"hclog-json\"}"
+  },
+  {
+    "runtime": "go",
+    "scenario": "hclog-child",
+    "expected": {
+      "message": "example hclog-child",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"@level\":\"warn\",\"@message\":\"example hclog-child\",\"@module\":\"synthetic\",\"@timestamp\":\"2023-11-14T22:13:20.123000Z\",\"component\":\"synthetic\",\"payload\":{\"enabled\":true,\"items\":[true,null,7,\"λ\"],\"nested\":{\"path\":\"/example\",\"statusCode\":401}},\"scenario\":\"hclog-child\"}"
+  },
+  {
+    "runtime": "go",
+    "scenario": "hclog-error",
+    "expected": {
+      "message": "example hclog-error",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"@level\":\"warn\",\"@message\":\"example hclog-error\",\"@module\":\"synthetic\",\"@timestamp\":\"2023-11-14T22:13:20.123000Z\",\"error\":\"synthetic failure\",\"payload\":{\"enabled\":true,\"items\":[true,null,7,\"λ\"],\"nested\":{\"path\":\"/example\",\"statusCode\":401}},\"scenario\":\"hclog-error\"}"
+  }
+]
