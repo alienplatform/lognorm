@@ -58,6 +58,8 @@ cargo clippy --all-targets --all-features --locked -- -D warnings
 python3 compatibility/run.py
 cargo bench --bench normalize
 cargo test --test allocations -- --nocapture
+# With nightly Rust and cargo-fuzz installed:
+cargo fuzz run normalize -- -max_total_time=30
 ```
 
 The compatibility command needs Rust, Node, Python, npm, and uv. It installs

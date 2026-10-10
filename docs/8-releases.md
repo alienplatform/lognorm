@@ -16,7 +16,7 @@ remain in CI secrets and never appear in files, command output, or artifacts.
 ## Publishing
 
 Release-plz prepares version and changelog changes in a release pull request.
-Publishing runs from the default branch with a scoped registry secret. A release
+Publishing runs from the default branch with a registry secret. A release
 must not publish code from an untrusted pull request. The initial release is
 published only after CI and review have passed.
 

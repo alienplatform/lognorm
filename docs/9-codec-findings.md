@@ -124,6 +124,20 @@ conflicting versus equivalent timestamps. A timezone-free local time must not
 inherit process timezone. Preserve ambiguous time fields and return no time.
 Numeric magnitude alone does not identify a business timestamp's unit.
 
+## Implemented regression evidence
+
+`tests/normalization.rs` exercises exact numeric representations, malformed and
+trailing data, nested and escaped-equivalent duplicate keys, nesting fallback,
+Unicode escapes, BOM passthrough, dotted-key preservation, timestamp precision,
+timezones, and metadata conflicts. `tests/otlp.rs` separately verifies the
+explicit conversion policy when OTLP cannot represent a source value exactly.
+These tests use independently authored synthetic inputs.
+
+The BOM decision is passthrough. Decoder recursion exhaustion is classified as
+`InvalidJson`; the configurable byte limit is classified as `InputLimit`.
+Neither exposes a partial object. Byte decoding and framing remain collector
+responsibilities and are not established by these core tests.
+
 ## Evidence limits and next steps
 
 No upstream tests or performance benchmarks were executed in this review.
