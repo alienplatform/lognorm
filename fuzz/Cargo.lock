@@ -259,6 +259,7 @@ version = "0.1.0"
 dependencies = [
  "anstyle-parse",
  "chrono",
+ "memchr",
  "opentelemetry-proto",
  "serde",
  "serde_json",

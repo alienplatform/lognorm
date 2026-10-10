@@ -140,18 +140,44 @@ fn close(exact: f64, decoded: f64) -> bool {
     exact == decoded || difference <= exact.abs() * 1e-12 || difference <= 1e-300
 }
 
+/// State for one decoding pass.
+struct Pass<'a> {
+    literals: Literals<'a>,
+    /// Whether numbers kept as literal strings stay strings (the fields) or
+    /// become null (the recognition view).
+    keep_literal_strings: bool,
+    saw_literal_string: Cell<bool>,
+}
+
+impl<'a> Pass<'a> {
+    fn new(input: &'a str, keep_literal_strings: bool) -> Self {
+        Self {
+            literals: Literals::new(input),
+            keep_literal_strings,
+            saw_literal_string: Cell::new(false),
+        }
+    }
+}
+
 #[derive(Clone, Copy)]
-struct Preserve<'l, 'a>(&'l Literals<'a>);
+struct Preserve<'p, 'a>(&'p Pass<'a>);
 
 impl Preserve<'_, '_> {
     /// Take the next literal, check it against what serde_json decoded, and
     /// classify it. Every number is checked, so a scan that lost its place
     /// fails the record instead of attaching a literal to the wrong field.
     fn number<E: de::Error>(self, decoded: impl FnOnce(&str) -> bool) -> Result<Value, E> {
-        match self.0.next() {
-            Some(literal) if decoded(literal) => number(literal).map_err(E::custom),
-            _ => Err(E::custom("number literal out of order")),
+        let value = match self.0.literals.next() {
+            Some(literal) if decoded(literal) => number(literal).map_err(E::custom)?,
+            _ => return Err(E::custom("number literal out of order")),
+        };
+        if value.is_string() {
+            self.0.saw_literal_string.set(true);
+            if !self.0.keep_literal_strings {
+                return Ok(Value::Null);
+            }
         }
+        Ok(value)
     }
 }
 
@@ -230,15 +256,38 @@ impl<'de> Visitor<'de> for Preserve<'_, '_> {
     }
 }
 
-pub(crate) fn object(input: &str) -> Result<Map<String, Value>, ParseOutcome> {
+/// A decoded record.
+pub(crate) struct Decoded {
+    /// The complete root object.
+    pub(crate) fields: Map<String, Value>,
+    /// The same object with numbers kept as literal strings replaced by null,
+    /// so recognition never mistakes a number for text. Built only when such a
+    /// number occurs.
+    pub(crate) recognition: Option<Map<String, Value>>,
+}
+
+pub(crate) fn object(input: &str) -> Result<Decoded, ParseOutcome> {
     // Reject serde_json's reserved arbitrary-precision representation in input.
     // Decoding escaped key spellings is handled by the lexical guard below.
     if reserved_key(input) {
         return Err(ParseOutcome::InvalidJson);
     }
-    let literals = Literals::new(input);
+    let pass = Pass::new(input, true);
+    let fields = decode(input, &pass)?;
+    let recognition = if pass.saw_literal_string.get() {
+        Some(decode(input, &Pass::new(input, false))?)
+    } else {
+        None
+    };
+    Ok(Decoded {
+        fields,
+        recognition,
+    })
+}
+
+fn decode(input: &str, pass: &Pass<'_>) -> Result<Map<String, Value>, ParseOutcome> {
     let mut deserializer = serde_json::Deserializer::from_str(input);
-    let value = Preserve(&literals)
+    let value = Preserve(pass)
         .deserialize(&mut deserializer)
         .map_err(|error| {
             if error.to_string().starts_with(DUPLICATE_KEY) {
@@ -253,6 +302,7 @@ pub(crate) fn object(input: &str) -> Result<Map<String, Value>, ParseOutcome> {
         _ => Err(ParseOutcome::Text),
     }
 }
+
 fn reserved_key(input: &str) -> bool {
     // The private representation is rare. Only inspect strings if its spelling
     // could occur, including Unicode-escaped spellings of the dollar sign.

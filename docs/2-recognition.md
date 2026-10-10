@@ -31,6 +31,9 @@ from the input itself.
 - Literals outside the `f64` range fall back as invalid JSON, with the original
   intact.
 
+Recognition still treats a number kept as text as a number. It is never chosen
+as a message, level name, or timestamp string.
+
 Fields are identical whether or not another crate enables
 `arbitrary_precision`. `original()` remains the exact record.
 

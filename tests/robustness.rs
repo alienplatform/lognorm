@@ -120,8 +120,12 @@ proptest! {
         );
         // A literal with more digits than f64 holds stays exact text in the
         // fields and the timestamp is left unresolved rather than rounded.
-        let fits_f64 = BigDecimal::from_str(&literal.parse::<f64>().unwrap().to_string()).unwrap()
-            == BigDecimal::from_str(&literal).unwrap();
+        // Shortest renderings can tie, so use serde_json's, as fields do.
+        let fits_f64 = serde_json::Number::from_f64(literal.parse().unwrap())
+            .is_some_and(|number| {
+                BigDecimal::from_str(&number.to_string()).unwrap()
+                    == BigDecimal::from_str(&literal).unwrap()
+            });
         prop_assert_eq!(parse(&input).timestamp(), expected.filter(|_| fits_f64));
     }
 

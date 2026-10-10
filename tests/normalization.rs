@@ -222,6 +222,19 @@ fn source_review_numeric_edges_are_exact_numbers_or_exact_literals() {
 }
 
 #[test]
+fn numbers_kept_as_literal_text_are_never_recognized_as_text() {
+    let log = parse(r#"{"msg":184467440737095516160,"message":"ready"}"#);
+    assert_eq!(log.message(), "ready");
+    assert_eq!(log.fields()["msg"], "184467440737095516160");
+
+    let input = r#"{"msg":0.123456789012345678901,"level":"WARN"}"#;
+    let log = parse(input);
+    assert_eq!(log.message(), input);
+    assert_eq!(log.severity(), Some(Severity::Warn));
+    assert_eq!(log.fields()["msg"], "0.123456789012345678901");
+}
+
+#[test]
 fn numbers_outside_the_float_range_fall_back_intact() {
     for literal in ["1e400", "-1e400", &"9".repeat(400)] {
         let input = format!("{{\"msg\":\"ready\",\"n\":{literal}}}");
