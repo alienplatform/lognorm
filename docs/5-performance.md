@@ -6,7 +6,10 @@ measured against realistic records without weakening data preservation.
 ## Measurements
 
 Criterion benchmarks cover plain text, malformed JSON, small structured events,
-nested request logs, large exceptions, and input-limit fallback. Report both
+nested request logs, large exceptions, ANSI cleanup, and input-limit fallback.
+They also replay real Pino, tracing, structlog, and Loguru producer records,
+including exponent-form time. With `--all-features`, a second group measures
+normalization plus OTLP conversion. Report both
 records per second and bytes per second. Run optimized builds with fixed inputs.
 
 A separate allocation probe counts allocation calls and bytes for each case.

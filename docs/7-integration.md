@@ -29,8 +29,10 @@ explicit, tested encoding policy. The core never silently flattens values.
 
 OpenTelemetry supports structured bodies and attribute collections. The default
 adapter policy uses a string body and `app` map so list presentation and field
-queries are both straightforward. Numeric values that cannot be represented by
-the target without loss use an explicit string representation; the adapter
+queries are both straightforward. Integer literals outside the target's signed 64-bit range use exact strings.
+Other numbers use doubles only when their shortest JSON rendering has the same
+decimal value as the source; exponent spelling alone does not change the type.
+Values that cannot round-trip without loss use an explicit string representation; the adapter
 documents that limitation and retains the original value where possible.
 
 The optional `otlp` feature supplies a protobuf adapter. It represents JSON null

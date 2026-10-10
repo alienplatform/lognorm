@@ -55,7 +55,9 @@ seconds versus milliseconds solely from the number of digits in an arbitrary
 business field.
 
 Keep seconds signed and nanoseconds in `0..1_000_000_000`. Preserve subsecond
-precision and reject out-of-range values. Conflicting recognized timestamps
+precision and reject out-of-range values. Explicit numeric seconds support
+exponent notation using checked decimal arithmetic; nonzero sub-nanosecond
+values are left unresolved rather than rounded. Conflicting recognized timestamps
 produce `None`. No wall clock is consulted by the parser.
 
 ## Text and failures
@@ -68,3 +70,7 @@ these cases may panic or drop the original input.
 Pretty text can be decolorized for display, but structured fields that were
 never emitted cannot be recovered. Multiline text must be assembled before
 calling the parser.
+
+Display cleanup uses a maintained ANSI state machine. Non-ASCII text after a
+malformed ESC/CSI prefix remains visible; OSC/DCS payloads are discarded. Tabs
+and newlines outside control strings remain. Cleanup does not emulate a screen.

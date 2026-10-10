@@ -58,18 +58,36 @@ pub(crate) fn seconds(value: &Value) -> Option<Timestamp> {
     let number = value.as_number()?.to_string();
     let negative = number.starts_with('-');
     let unsigned = number.strip_prefix('-').unwrap_or(&number);
-    let (whole, fraction) = unsigned.split_once('.').unwrap_or((unsigned, ""));
-    if fraction.len() > 9 || !fraction.bytes().all(|byte| byte.is_ascii_digit()) {
-        return None;
+    let (mantissa, exponent) = unsigned.split_once(['e', 'E']).unwrap_or((unsigned, "0"));
+    let fraction_len = mantissa
+        .split_once('.')
+        .map_or(0, |(_, fraction)| fraction.len());
+    let significant = mantissa.trim_end_matches('0');
+    let trailing_zeros = mantissa.len() - significant.len();
+    let coefficient = significant
+        .bytes()
+        .filter(|byte| *byte != b'.')
+        .try_fold(0_i128, |total, digit| {
+            total.checked_mul(10)?.checked_add(i128::from(digit - b'0'))
+        })?;
+    if coefficient == 0 {
+        return Timestamp::new(0, 0);
     }
-    let whole: i128 = whole.parse().ok()?;
-    let nanos: i128 = if fraction.is_empty() {
-        0
+    let scale = exponent
+        .parse::<i64>()
+        .ok()?
+        .checked_sub(i64::try_from(fraction_len).ok()?)?
+        .checked_add(i64::try_from(trailing_zeros).ok()?)?
+        .checked_add(9)?;
+    // After removing trailing zeros, a negative scale has a nonzero sub-nanosecond
+    // fraction. Reject it rather than round; checked arithmetic also bounds work.
+    let factor = 10_i128.checked_pow(u32::try_from(scale).ok()?)?;
+    let total = coefficient.checked_mul(factor)?;
+    let total = if negative {
+        total.checked_neg()?
     } else {
-        fraction.parse::<i128>().ok()? * 10_i128.pow(9 - fraction.len() as u32)
+        total
     };
-    let total = whole.checked_mul(1_000_000_000)?.checked_add(nanos)?;
-    let total = if negative { -total } else { total };
     Timestamp::new(
         total.div_euclid(1_000_000_000).try_into().ok()?,
         total.rem_euclid(1_000_000_000) as u32,

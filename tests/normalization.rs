@@ -264,3 +264,58 @@ fn decoder_depth_boundary_is_explicit_and_lossless() {
         }
     }
 }
+
+#[test]
+fn known_seconds_timestamps_accept_exact_exponents() {
+    for (literal, expected) in [
+        ("1e-6", Timestamp::new(0, 1000)),
+        ("-1e-6", Timestamp::new(-1, 999999000)),
+        ("1e-9", Timestamp::new(0, 1)),
+        ("1.234e+3", Timestamp::new(1234, 0)),
+        ("0e400", Timestamp::new(0, 0)),
+        ("1e-10", None),
+        ("1e400", None),
+    ] {
+        let input = format!(
+            r#"{{"text":"example","record":{{"message":"example","level":{{"name":"WARNING","no":30}},"time":{{"timestamp":{literal}}}}}}}"#
+        );
+        assert_eq!(parse(&input).timestamp(), expected, "{literal}");
+    }
+}
+
+#[test]
+fn terminal_sequences_do_not_leak_payload_or_destroy_unicode() {
+    for (input, expected) in [
+        ("\x1b(Bready", "ready"),
+        ("\x1bP1;2|hidden\x1b\\ready", "ready"),
+        (
+            "\x1b]8;;https://example.org\x1b\\ready\x1b]8;;\x1b\\",
+            "ready",
+        ),
+        ("\x1bλready", "λready"),
+        ("\x1b[31λready", "λready"),
+        ("ready\tλ\n", "ready\tλ\n"),
+    ] {
+        let log = parse(input);
+        assert_eq!(log.message(), expected, "{input:?}");
+        assert_eq!(log.original(), input);
+    }
+}
+
+#[test]
+fn unicode_control_payloads_are_suppressed_and_cleanup_state_is_per_record() {
+    assert_eq!(parse("\x1b]0;hidden λ\x07ready").message(), "ready");
+    assert_eq!(parse("\x1bP1|hidden λ\x1b\\ready").message(), "ready");
+    assert_eq!(parse("\x1b[31").message(), "");
+    assert_eq!(parse("ready").message(), "ready");
+}
+
+proptest! {
+    #[test]
+    fn valid_color_codes_preserve_visible_unicode_and_spacing(input in "[A-Za-z0-9λ🚀\\t\\n]{0,128}") {
+        let colored = format!("\x1b[31m{input}\x1b[0m");
+        let log = parse(&colored);
+        prop_assert_eq!(log.message(), input.as_str());
+        prop_assert_eq!(log.original(), colored.as_str());
+    }
+}

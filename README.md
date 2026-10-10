@@ -56,14 +56,15 @@ metadata, observed time, batching, and transport. See [integration](docs/7-integ
 cargo test --all-features --locked
 cargo clippy --all-targets --all-features --locked -- -D warnings
 python3 compatibility/run.py
-cargo bench --bench normalize
+cargo bench --all-features --bench normalize
 cargo test --test allocations -- --nocapture
-# With nightly Rust and cargo-fuzz installed:
-cargo fuzz run normalize -- -max_total_time=30
+# With nightly Rust and cargo-fuzz installed, choose an empty corpus directory:
+python3 fuzz/seed.py fuzz/corpus/new-run
+cargo fuzz run normalize fuzz/corpus/new-run -- -max_total_time=30
 ```
 
 The compatibility command needs Rust, Node, Python, npm, and uv. It installs
-locked dependencies and runs 34 real logger configurations. Fast Rust tests
+locked dependencies and runs 35 real logger configurations. Fast Rust tests
 replay sanitized producer fixtures. `python3 compatibility/run.py --refresh`
 explicitly refreshes verified fixtures; review their diff before committing.
 

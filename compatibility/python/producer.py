@@ -1,6 +1,7 @@
 """Emit one synthetic record using the actual configured logging library."""
 
 import logging
+from datetime import datetime, timezone
 import sys
 
 import structlog
@@ -67,6 +68,12 @@ elif scenario.startswith("loguru-"):
         diagnose=False,
     )
     logger = loguru.bind(**context)
+    if scenario == "loguru-time-exponent":
+        logger = logger.patch(
+            lambda record: record.update(
+                time=datetime(1970, 1, 1, 0, 0, 0, 1, tzinfo=timezone.utc)
+            )
+        )
     if scenario == "loguru-error":
         try:
             raise ValueError("synthetic failure")

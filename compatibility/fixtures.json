@@ -72,7 +72,7 @@
       ],
       "payloadIsString": false
     },
-    "input": "{\"level\":40,\"time\":1700000000123,\"pid\":42,\"hostname\":\"example-host\",\"scenario\":\"pino-error\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"err\":{\"type\":\"Error\",\"message\":\"synthetic failure\",\"stack\":\"Error: synthetic failure\\n    at file:///source/lognorm/compatibility/node/producer.mjs:9:15\\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)\\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\"},\"msg\":\"example pino-error\"}"
+    "input": "{\"level\":40,\"time\":1700000000123,\"pid\":42,\"hostname\":\"example-host\",\"scenario\":\"pino-error\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"err\":{\"type\":\"Error\",\"message\":\"synthetic failure\",\"stack\":\"Error: synthetic failure\\n    at file:///source/lognorm/compatibility/node/producer.mjs:13:15\\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)\\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\"},\"msg\":\"example pino-error\"}"
   },
   {
     "runtime": "node",
@@ -193,7 +193,7 @@
       ],
       "payloadIsString": false
     },
-    "input": "{\"level\":\"warn\",\"message\":\"example winston-error\",\"payload\":{\"enabled\":true,\"items\":[true,null,7,\"λ\"],\"nested\":{\"path\":\"/example\",\"statusCode\":401}},\"scenario\":\"winston-error\",\"stack\":\"Error: example winston-error\\n    at file:///source/lognorm/compatibility/node/producer.mjs:9:15\\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)\\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\"}"
+    "input": "{\"level\":\"warn\",\"message\":\"example winston-error\",\"payload\":{\"enabled\":true,\"items\":[true,null,7,\"λ\"],\"nested\":{\"path\":\"/example\",\"statusCode\":401}},\"scenario\":\"winston-error\",\"stack\":\"Error: example winston-error\\n    at file:///source/lognorm/compatibility/node/producer.mjs:13:15\\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)\\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\"}"
   },
   {
     "runtime": "node",
@@ -221,7 +221,7 @@
       ],
       "payloadIsString": false
     },
-    "input": "{\"name\":\"synthetic\",\"hostname\":\"example-host\",\"pid\":42,\"level\":40,\"scenario\":\"bunyan-default\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example bunyan-default\",\"time\":\"2026-10-10T03:47:57.013Z\",\"v\":0}"
+    "input": "{\"name\":\"synthetic\",\"hostname\":\"example-host\",\"pid\":42,\"level\":40,\"scenario\":\"bunyan-default\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example bunyan-default\",\"time\":\"2026-10-10T03:54:40.503Z\",\"v\":0}"
   },
   {
     "runtime": "node",
@@ -236,7 +236,7 @@
       ],
       "payloadIsString": false
     },
-    "input": "{\"name\":\"synthetic\",\"hostname\":\"example-host\",\"pid\":42952,\"component\":\"synthetic\",\"level\":40,\"scenario\":\"bunyan-child\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example bunyan-child\",\"time\":\"2026-10-10T03:47:57.110Z\",\"v\":0}"
+    "input": "{\"name\":\"synthetic\",\"hostname\":\"example-host\",\"pid\":66213,\"component\":\"synthetic\",\"level\":40,\"scenario\":\"bunyan-child\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"msg\":\"example bunyan-child\",\"time\":\"2026-10-10T03:54:40.670Z\",\"v\":0}"
   },
   {
     "runtime": "node",
@@ -251,7 +251,7 @@
       ],
       "payloadIsString": false
     },
-    "input": "{\"name\":\"synthetic\",\"hostname\":\"example-host\",\"pid\":42,\"level\":40,\"scenario\":\"bunyan-error\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"err\":{\"message\":\"synthetic failure\",\"name\":\"Error\",\"stack\":\"Error: synthetic failure\\n    at file:///source/lognorm/compatibility/node/producer.mjs:9:15\\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)\\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\"},\"msg\":\"example bunyan-error\",\"time\":\"2026-10-10T03:47:57.209Z\",\"v\":0}"
+    "input": "{\"name\":\"synthetic\",\"hostname\":\"example-host\",\"pid\":42,\"level\":40,\"scenario\":\"bunyan-error\",\"payload\":{\"nested\":{\"path\":\"/example\",\"statusCode\":401},\"items\":[true,null,7,\"λ\"],\"enabled\":true},\"err\":{\"message\":\"synthetic failure\",\"name\":\"Error\",\"stack\":\"Error: synthetic failure\\n    at file:///source/lognorm/compatibility/node/producer.mjs:13:15\\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)\\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\"},\"msg\":\"example bunyan-error\",\"time\":\"2026-10-10T03:54:40.828Z\",\"v\":0}"
   },
   {
     "runtime": "node",
@@ -309,7 +309,7 @@
       ],
       "payloadIsString": false
     },
-    "input": "{\"levelname\": \"WARNING\", \"levelno\": 30, \"message\": \"example python-error\", \"exc_info\": \"Traceback (most recent call last):\\n  File \\\"/source/lognorm/compatibility/python/producer.py\\\", line 28, in <module>\\n    raise ValueError(\\\"synthetic failure\\\")\\nValueError: synthetic failure\", \"scenario\": \"python-error\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}}"
+    "input": "{\"levelname\": \"WARNING\", \"levelno\": 30, \"message\": \"example python-error\", \"exc_info\": \"Traceback (most recent call last):\\n  File \\\"/source/lognorm/compatibility/python/producer.py\\\", line 37, in <module>\\n    raise ValueError(\\\"synthetic failure\\\")\\nValueError: synthetic failure\", \"scenario\": \"python-error\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}}"
   },
   {
     "runtime": "python",
@@ -352,7 +352,7 @@
       ],
       "payloadIsString": false
     },
-    "input": "{\"scenario\": \"structlog-time\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}, \"event\": \"example structlog-time\", \"level\": \"warning\", \"timestamp\": \"2026-10-10T03:47:57.745412Z\"}"
+    "input": "{\"scenario\": \"structlog-time\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}, \"event\": \"example structlog-time\", \"level\": \"warning\", \"timestamp\": \"2026-10-10T03:54:41.557535Z\"}"
   },
   {
     "runtime": "python",
@@ -367,7 +367,7 @@
       ],
       "payloadIsString": false
     },
-    "input": "{\"scenario\": \"structlog-error\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}, \"event\": \"example structlog-error\", \"level\": \"warning\", \"exception\": \"Traceback (most recent call last):\\n  File \\\"/source/lognorm/compatibility/python/producer.py\\\", line 44, in <module>\\n    raise ValueError(\\\"synthetic failure\\\")\\nValueError: synthetic failure\"}"
+    "input": "{\"scenario\": \"structlog-error\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"\\u03bb\"], \"enabled\": true}, \"event\": \"example structlog-error\", \"level\": \"warning\", \"exception\": \"Traceback (most recent call last):\\n  File \\\"/source/lognorm/compatibility/python/producer.py\\\", line 56, in <module>\\n    raise ValueError(\\\"synthetic failure\\\")\\nValueError: synthetic failure\"}"
   },
   {
     "runtime": "python",
@@ -384,7 +384,24 @@
       ],
       "payloadIsString": false
     },
-    "input": "{\"text\": \"example loguru-json\\n\", \"record\": {\"elapsed\": {\"repr\": \"0:00:00.004363\", \"seconds\": 0.004363}, \"exception\": null, \"extra\": {\"scenario\": \"loguru-json\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"λ\"], \"enabled\": true}}, \"file\": {\"name\": \"producer.py\", \"path\": \"/source/lognorm/compatibility/python/producer.py\"}, \"function\": \"<module>\", \"level\": {\"icon\": \"⚠️\", \"name\": \"WARNING\", \"no\": 30}, \"line\": 59, \"message\": \"example loguru-json\", \"module\": \"producer\", \"name\": \"__main__\", \"process\": {\"id\": 43004, \"name\": \"MainProcess\"}, \"thread\": {\"id\": 8323070656, \"name\": \"MainThread\"}, \"time\": {\"repr\": \"2026-10-10 06:47:57.872283+03:00\", \"timestamp\": 1791604077.872283}}}"
+    "input": "{\"text\": \"example loguru-json\\n\", \"record\": {\"elapsed\": {\"repr\": \"0:00:00.006918\", \"seconds\": 0.006918}, \"exception\": null, \"extra\": {\"scenario\": \"loguru-json\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"λ\"], \"enabled\": true}}, \"file\": {\"name\": \"producer.py\", \"path\": \"/source/lognorm/compatibility/python/producer.py\"}, \"function\": \"<module>\", \"level\": {\"icon\": \"⚠️\", \"name\": \"WARNING\", \"no\": 30}, \"line\": 79, \"message\": \"example loguru-json\", \"module\": \"producer\", \"name\": \"__main__\", \"process\": {\"id\": 66229, \"name\": \"MainProcess\"}, \"thread\": {\"id\": 8323070656, \"name\": \"MainThread\"}, \"time\": {\"repr\": \"2026-10-10 06:54:41.735283+03:00\", \"timestamp\": 1791604481.735283}}}"
+  },
+  {
+    "runtime": "python",
+    "scenario": "loguru-time-exponent",
+    "expected": {
+      "message": "example loguru-time-exponent",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "record",
+        "extra",
+        "payload"
+      ],
+      "payloadIsString": false
+    },
+    "input": "{\"text\": \"example loguru-time-exponent\\n\", \"record\": {\"elapsed\": {\"repr\": \"0:00:00.005573\", \"seconds\": 0.005573}, \"exception\": null, \"extra\": {\"scenario\": \"loguru-time-exponent\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"λ\"], \"enabled\": true}}, \"file\": {\"name\": \"producer.py\", \"path\": \"/source/lognorm/compatibility/python/producer.py\"}, \"function\": \"<module>\", \"level\": {\"icon\": \"⚠️\", \"name\": \"WARNING\", \"no\": 30}, \"line\": 79, \"message\": \"example loguru-time-exponent\", \"module\": \"producer\", \"name\": \"__main__\", \"process\": {\"id\": 66253, \"name\": \"MainProcess\"}, \"thread\": {\"id\": 8323070656, \"name\": \"MainThread\"}, \"time\": {\"repr\": \"1970-01-01 00:00:00.000001+00:00\", \"timestamp\": 1e-06}}}"
   },
   {
     "runtime": "python",
@@ -401,7 +418,7 @@
       ],
       "payloadIsString": false
     },
-    "input": "{\"text\": \"example loguru-error\\nTraceback (most recent call last):\\n  File \\\"/source/lognorm/compatibility/python/producer.py\\\", line 55, in <module>\\n    raise ValueError(\\\"synthetic failure\\\")\\nValueError: synthetic failure\\n\", \"record\": {\"elapsed\": {\"repr\": \"0:00:00.004775\", \"seconds\": 0.004775}, \"exception\": {\"type\": \"ValueError\", \"value\": \"synthetic failure\", \"traceback\": true}, \"extra\": {\"scenario\": \"loguru-error\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"λ\"], \"enabled\": true}}, \"file\": {\"name\": \"producer.py\", \"path\": \"/source/lognorm/compatibility/python/producer.py\"}, \"function\": \"<module>\", \"level\": {\"icon\": \"⚠️\", \"name\": \"WARNING\", \"no\": 30}, \"line\": 57, \"message\": \"example loguru-error\", \"module\": \"producer\", \"name\": \"__main__\", \"process\": {\"id\": 43005, \"name\": \"MainProcess\"}, \"thread\": {\"id\": 8323070656, \"name\": \"MainThread\"}, \"time\": {\"repr\": \"2026-10-10 06:47:57.940360+03:00\", \"timestamp\": 1791604077.94036}}}"
+    "input": "{\"text\": \"example loguru-error\\nTraceback (most recent call last):\\n  File \\\"/source/lognorm/compatibility/python/producer.py\\\", line 75, in <module>\\n    raise ValueError(\\\"synthetic failure\\\")\\nValueError: synthetic failure\\n\", \"record\": {\"elapsed\": {\"repr\": \"0:00:00.005686\", \"seconds\": 0.005686}, \"exception\": {\"type\": \"ValueError\", \"value\": \"synthetic failure\", \"traceback\": true}, \"extra\": {\"scenario\": \"loguru-error\", \"payload\": {\"nested\": {\"path\": \"/example\", \"statusCode\": 401}, \"items\": [true, null, 7, \"λ\"], \"enabled\": true}}, \"file\": {\"name\": \"producer.py\", \"path\": \"/source/lognorm/compatibility/python/producer.py\"}, \"function\": \"<module>\", \"level\": {\"icon\": \"⚠️\", \"name\": \"WARNING\", \"no\": 30}, \"line\": 77, \"message\": \"example loguru-error\", \"module\": \"producer\", \"name\": \"__main__\", \"process\": {\"id\": 66256, \"name\": \"MainProcess\"}, \"thread\": {\"id\": 8323070656, \"name\": \"MainThread\"}, \"time\": {\"repr\": \"2026-10-10 06:54:41.888454+03:00\", \"timestamp\": 1791604481.888454}}}"
   },
   {
     "runtime": "python",
@@ -430,7 +447,7 @@
       ],
       "payloadIsString": true
     },
-    "input": "{\"timestamp\":\"2026-10-10T03:47:58.030131Z\",\"level\":\"WARN\",\"fields\":{\"message\":\"example tracing-nested\",\"scenario\":\"tracing-nested\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true},\"target\":\"lognorm_compatibility_producers\"}"
+    "input": "{\"timestamp\":\"2026-10-10T03:54:41.987704Z\",\"level\":\"WARN\",\"fields\":{\"message\":\"example tracing-nested\",\"scenario\":\"tracing-nested\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true},\"target\":\"lognorm_compatibility_producers\"}"
   },
   {
     "runtime": "rust",
@@ -445,7 +462,7 @@
       ],
       "payloadIsString": true
     },
-    "input": "{\"timestamp\":\"2026-10-10T03:47:58.041938Z\",\"level\":\"WARN\",\"message\":\"example tracing-flat\",\"scenario\":\"tracing-flat\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true,\"target\":\"lognorm_compatibility_producers\"}"
+    "input": "{\"timestamp\":\"2026-10-10T03:54:42.000179Z\",\"level\":\"WARN\",\"message\":\"example tracing-flat\",\"scenario\":\"tracing-flat\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true,\"target\":\"lognorm_compatibility_producers\"}"
   },
   {
     "runtime": "rust",
@@ -461,7 +478,7 @@
       ],
       "payloadIsString": true
     },
-    "input": "{\"timestamp\":\"2026-10-10T03:47:58.053275Z\",\"level\":\"WARN\",\"fields\":{\"message\":\"example tracing-span\",\"scenario\":\"tracing-span\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true},\"target\":\"lognorm_compatibility_producers\",\"span\":{\"component\":\"synthetic\",\"name\":\"operation\"},\"spans\":[{\"component\":\"synthetic\",\"name\":\"operation\"}]}"
+    "input": "{\"timestamp\":\"2026-10-10T03:54:42.011602Z\",\"level\":\"WARN\",\"fields\":{\"message\":\"example tracing-span\",\"scenario\":\"tracing-span\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true},\"target\":\"lognorm_compatibility_producers\",\"span\":{\"component\":\"synthetic\",\"name\":\"operation\"},\"spans\":[{\"component\":\"synthetic\",\"name\":\"operation\"}]}"
   },
   {
     "runtime": "rust",
@@ -503,6 +520,6 @@
       "payloadPath": null,
       "payloadIsString": false
     },
-    "input": "[2026-10-10T03:47:58Z WARN  lognorm_compatibility_producers] example env-logger-text"
+    "input": "[2026-10-10T03:54:42Z WARN  lognorm_compatibility_producers] example env-logger-text"
   }
 ]

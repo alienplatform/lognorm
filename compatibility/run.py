@@ -55,6 +55,7 @@ def scenarios():
             "structlog-time",
             "structlog-error",
             "loguru-json",
+            "loguru-time-exponent",
             "loguru-error",
             "loguru-text",
         ],
@@ -137,6 +138,9 @@ def verify(case, normalized):
         name,
         normalized,
     )
+    if name == "loguru-time-exponent":
+        assert normalized["timestamp"] == {"seconds": 0, "nanos": 1000}, name
+        assert "e-06" in raw or "e-6" in raw, (name, "producer must emit an exponent")
     if expected["structured"]:
         source = json.loads(raw, parse_float=Decimal, parse_int=Decimal)
         assert same_json(normalized["fields"], source), (

@@ -145,3 +145,27 @@ Only the linked files and selected test cases were inspected; this is not a
 claim of full upstream coverage. Add the synthetic regressions above before the
 corresponding behavior, then run the independent producer matrix. Collector
 framing and invalid-byte cases remain integration tests outside this core.
+
+## Terminal escapes and malformed Unicode boundaries
+
+The review also inspected [vte's escape, OSC, DCS, and Unicode tests](https://github.com/alacritty/vte/blob/3b3da71c34cc1256c7e20981cf03f8eb95e08ffc/src/lib.rs),
+then [anstyle-parse's public state-machine interface](https://github.com/rust-cli/anstyle/blob/3048fe7820055a6c995170d822e725c62b3d63e1/crates/anstyle-parse/src/state/mod.rs)
+and its generated-table verification test. The latter exposes transitions
+without requiring terminal output buffers or parameter collection. No upstream
+suite was executed for this comparison.
+
+[strip-ansi-escapes](https://github.com/luser/strip-ansi-escapes/blob/abcc4fd11f55575944eb83c13dd6ba13433f2fed/src/lib.rs)
+uses a terminal parser and preserves linefeeds, but its execute callback drops
+tabs. A terminal parser can also deliberately discard non-ASCII bytes inside an
+unfinished escape sequence. Neither behavior matches our display contract.
+
+Use anstyle-parse's public transitions for ASCII escapes, with an explicit
+policy for already-validated Unicode: preserve visible characters after a
+malformed ESC/CSI prefix, and discard Unicode inside OSC/DCS control payloads.
+Preserve tabs and newlines outside control strings. Keep original input and
+structured fields unchanged. There is no terminal screen emulation or replay of
+cursor movement.
+
+Independent regressions cover charset selection, DCS payload suppression, OSC
+hyperlinks, malformed prefixes followed by Unicode, and plain multiline text.
+This reuses a maintained grammar rather than extending color-only escape logic.

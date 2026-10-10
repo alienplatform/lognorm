@@ -8,13 +8,16 @@ use std::{
     time::Duration,
 };
 
+use bigdecimal::BigDecimal;
 use opentelemetry_proto::tonic::{
     collector::logs::v1::{ExportLogsServiceRequest, ExportLogsServiceResponse},
     common::v1::{any_value::Value as OtlpValue, AnyValue},
     logs::v1::{ResourceLogs, ScopeLogs},
 };
+use proptest::prelude::*;
 use prost::Message;
 use serde_json::Value;
+use std::str::FromStr;
 
 fn decode_value(value: &AnyValue) -> Value {
     match &value.value {
@@ -141,10 +144,11 @@ fn producer_records_survive_otlp_http_export() {
         if expected["structured"] == true {
             assert_eq!(record.attributes.len(), 1, "{name}");
             assert_eq!(record.attributes[0].key, "app");
-            assert_eq!(
-                decode_value(record.attributes[0].value.as_ref().unwrap()),
-                serde_json::from_str::<Value>(case["input"].as_str().unwrap()).unwrap(),
-                "{name}"
+            let decoded_app = decode_value(record.attributes[0].value.as_ref().unwrap());
+            let source: Value = serde_json::from_str(case["input"].as_str().unwrap()).unwrap();
+            assert!(
+                same_json(&decoded_app, &source),
+                "{name}: {decoded_app} != {source}"
             );
         } else {
             assert!(record.attributes.is_empty());
@@ -164,4 +168,56 @@ fn unsupported_otlp_numbers_use_exact_strings_and_negative_time_is_unspecified()
     assert_eq!(app["ordinary"], 1.5);
     assert!(app["nothing"].is_null());
     assert_eq!(record.time_unix_nano, 0);
+}
+
+// OTLP has numeric values, not JSON number spellings. Compare decimal meaning
+// with an independent arbitrary-precision implementation, retaining value kinds.
+fn same_json(left: &Value, right: &Value) -> bool {
+    match (left, right) {
+        (Value::Number(left), Value::Number(right)) => {
+            BigDecimal::from_str(&left.to_string()).unwrap()
+                == BigDecimal::from_str(&right.to_string()).unwrap()
+        }
+        (Value::Array(left), Value::Array(right)) => {
+            left.len() == right.len() && left.iter().zip(right).all(|(a, b)| same_json(a, b))
+        }
+        (Value::Object(left), Value::Object(right)) => {
+            left.len() == right.len()
+                && left
+                    .iter()
+                    .all(|(key, value)| right.get(key).is_some_and(|other| same_json(value, other)))
+        }
+        _ => left == right,
+    }
+}
+
+#[test]
+fn decimal_exponent_spelling_does_not_force_strings_or_hide_precision_loss() {
+    let parsed = lognorm::parse(
+        r#"{"micro":1e-06,"one":1e0,"precise":1.00000000000000000001,"big":1000000000000000000000000000000}"#,
+    );
+    let record = lognorm::otlp::log_record(&parsed);
+    let app = decode_value(record.attributes[0].value.as_ref().unwrap());
+    assert!(app["micro"].is_number());
+    assert!(same_json(&app["micro"], &serde_json::json!(0.000001)));
+    assert!(app["one"].is_number());
+    assert!(same_json(&app["one"], &serde_json::json!(1)));
+    assert_eq!(app["precise"], "1.00000000000000000001");
+    assert_eq!(app["big"], "1000000000000000000000000000000");
+    assert!(!same_json(&serde_json::json!(true), &serde_json::json!(1)));
+}
+
+proptest! {
+    #[test]
+    fn exported_decimal_numbers_are_exact_or_explicit_strings(mantissa in any::<i64>(), exponent in -30_i32..30) {
+        let input = format!("{{\"n\":{mantissa}e{exponent}}}");
+        let parsed = lognorm::parse(&input);
+        let record = lognorm::otlp::log_record(&parsed);
+        let app = decode_value(record.attributes[0].value.as_ref().unwrap());
+        match &app["n"] {
+            Value::Number(_) => prop_assert!(same_json(&app["n"], &parsed.fields()["n"])),
+            Value::String(value) => prop_assert_eq!(value, &parsed.fields()["n"].to_string()),
+            other => prop_assert!(false, "unexpected numeric conversion: {other}"),
+        }
+    }
 }

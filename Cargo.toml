@@ -16,12 +16,14 @@ default = []
 otlp = ["dep:opentelemetry-proto"]
 
 [dependencies]
+anstyle-parse = { version = "1", default-features = false }
 chrono = { version = "0.4", default-features = false, features = ["std"] }
 serde = "1"
 serde_json = { version = "1", features = ["arbitrary_precision"] }
 opentelemetry-proto = { version = "0.31", optional = true, default-features = false, features = ["gen-tonic-messages", "logs"] }
 
 [dev-dependencies]
+bigdecimal = "0.4"
 criterion = "0.5"
 proptest = "1"
 stats_alloc = "0.1.10"
