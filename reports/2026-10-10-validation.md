@@ -12,7 +12,7 @@ Python 3.12. Benchmark results from these environments are not interchangeable.
 
 ## Compatibility and transport
 
-`python3 compatibility/run.py --refresh` passed 33 configurations. Fresh producer
+`python3 compatibility/run.py --refresh` passed 34 configurations. Fresh producer
 output was verified before sanitizing machine-specific paths in checked fixtures.
 Expected semantics are authored in the harness rather than obtained from parser
 output. Follow-up changes also test actual exception fields, child context, and
@@ -43,22 +43,27 @@ conversion. Allocation counts are checked in an isolated test executable.
 
 ## Throughput experiment
 
-Command: `cargo bench --bench normalize -- --warm-up-time 0.2 --measurement-time
-0.5 --sample-size 10`. Inputs are defined in `benches/normalize.rs`.
+Command: `cargo bench --bench normalize -- --warm-up-time 1 --measurement-time
+3 --sample-size 100`. Inputs are defined in `benches/normalize.rs`. RUSTC and
+RUSTDOC were explicitly set to the stable toolchain's executables: this machine's
+PATH otherwise resolves rustc to a nightly build even when invoking stable cargo.
+The table reports Criterion's estimated time interval, rounded for readability.
 
-| Case | Approximate time per record | Approximate records/second |
-| --- | ---: | ---: |
-| Plain text | 33 ns | 30 million |
-| Malformed JSON | 313 ns | 3.2 million |
-| Small structured record | 1.25 µs | 800,000 |
-| Nested request | 1.83 µs | 550,000 |
-| Large exception | 11.3 µs | 89,000 |
-| Oversized fallback | 24 ns | 41 million |
+| Case | Estimated time per record |
+| --- | ---: |
+| Plain text | 39.6–41.1 ns |
+| Malformed JSON | 0.52–1.53 µs |
+| Small structured record | 1.51–1.88 µs |
+| Nested request | 1.38–1.43 µs |
+| Large exception | 9.53–9.96 µs |
+| Oversized fallback | 16.6–17.9 ns |
 
-The short samples are exploratory. Oversized fallback examines the length, not
-all bytes; byte throughput for that case is misleading. These are core parser
-measurements, excluding transport and OTLP conversion. No VRL comparison was
-run, so these numbers establish no advantage over VRL.
+The malformed-input measurements were particularly noisy; these are exploratory
+observations, not regression thresholds. Oversized fallback examines the length,
+not all bytes; byte throughput for that case is misleading. These are core
+parser measurements, excluding transport and OTLP conversion. No VRL comparison
+was run, so these numbers establish no advantage over VRL. Automatic Criterion
+comparisons to earlier runs using a different compiler are not valid comparisons.
 
 ## Fuzz experiment
 

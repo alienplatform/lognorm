@@ -244,3 +244,23 @@ fn timestamp_precision_and_timezone_are_never_invented() {
     assert!(log.timestamp().is_some());
     assert_eq!(log.severity(), Some(Severity::Warn));
 }
+
+#[test]
+fn decoder_depth_boundary_is_explicit_and_lossless() {
+    // The outer root counts as a container in serde_json's depth budget.
+    for (depth, outcome) in [
+        (126, ParseOutcome::Structured),
+        (127, ParseOutcome::InvalidJson),
+        (128, ParseOutcome::InvalidJson),
+    ] {
+        let input = format!("{{\"nested\":{}0{}}}", "[".repeat(depth), "]".repeat(depth));
+        let log = parse(&input);
+        assert_eq!(log.outcome(), outcome, "depth={depth}");
+        assert_eq!(log.original(), input);
+        if outcome == ParseOutcome::Structured {
+            assert!(log.fields()["nested"].is_array());
+        } else {
+            assert!(log.fields().is_empty());
+        }
+    }
+}

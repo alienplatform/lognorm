@@ -63,3 +63,7 @@ another application-log parsing pass.
 These documents describe the desired behavior. A missing implementation is a
 gap to close, not a reason to weaken the contract. Open pull requests and issues
 track implementation status separately.
+
+The [logger landscape](10-logger-landscape.md) records the selection rationale
+and dated popularity evidence. The [codec findings](9-codec-findings.md) connect
+source and test review to preservation decisions and regressions.

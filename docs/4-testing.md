@@ -78,6 +78,7 @@ separately and cannot replace pinned tests.
 | Winston | JSON, timestamp, metadata, errors, text |
 | Bunyan | Numeric levels, child fields, errors |
 | tracing-subscriber | Nested fields, flattened fields, spans, absent time, text |
+| log / env_logger | Default text formatter, stdout collection |
 | Python logging | Plain formatter, python-json-logger, renamed standard keys |
 | structlog | JSON renderer, level and time processors, context, exceptions |
 | Loguru | Serialized records, bound extras, exceptions, text |

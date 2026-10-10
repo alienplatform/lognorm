@@ -63,7 +63,7 @@ cargo fuzz run normalize -- -max_total_time=30
 ```
 
 The compatibility command needs Rust, Node, Python, npm, and uv. It installs
-locked dependencies and runs 33 real logger configurations. Fast Rust tests
+locked dependencies and runs 34 real logger configurations. Fast Rust tests
 replay sanitized producer fixtures. `python3 compatibility/run.py --refresh`
 explicitly refreshes verified fixtures; review their diff before committing.
 

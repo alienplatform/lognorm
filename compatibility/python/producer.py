@@ -1,4 +1,5 @@
 """Emit one synthetic record using the actual configured logging library."""
+
 import logging
 import sys
 
@@ -8,7 +9,11 @@ from pythonjsonlogger.json import JsonFormatter
 
 scenario = sys.argv[1]
 message = f"example {scenario}"
-payload = {"nested": {"path": "/example", "statusCode": 401}, "items": [True, None, 7, "λ"], "enabled": True}
+payload = {
+    "nested": {"path": "/example", "statusCode": 401},
+    "items": [True, None, 7, "λ"],
+    "enabled": True,
+}
 context = {"scenario": scenario, "payload": payload}
 
 if scenario.startswith("python-"):
@@ -18,7 +23,10 @@ if scenario.startswith("python-"):
     if scenario == "python-text":
         formatter = logging.Formatter("%(message)s")
     elif scenario == "python-renamed":
-        formatter = JsonFormatter("%(levelname)s %(message)s", rename_fields={"levelname": "severity", "message": "msg"})
+        formatter = JsonFormatter(
+            "%(levelname)s %(message)s",
+            rename_fields={"levelname": "severity", "message": "msg"},
+        )
     else:
         formatter = JsonFormatter("%(levelname)s %(levelno)s %(message)s")
     handler.setFormatter(formatter)
@@ -37,7 +45,10 @@ elif scenario.startswith("structlog-"):
     if scenario == "structlog-error":
         processors.append(structlog.processors.format_exc_info)
     processors.append(structlog.processors.JSONRenderer())
-    structlog.configure(processors=processors, logger_factory=structlog.PrintLoggerFactory(file=sys.stdout))
+    structlog.configure(
+        processors=processors,
+        logger_factory=structlog.PrintLoggerFactory(file=sys.stdout),
+    )
     logger = structlog.get_logger().bind(**context)
     if scenario == "structlog-error":
         try:
@@ -48,7 +59,13 @@ elif scenario.startswith("structlog-"):
         logger.warning(message)
 elif scenario.startswith("loguru-"):
     loguru.remove()
-    loguru.add(sys.stdout, serialize=scenario != "loguru-text", format="{message}", backtrace=False, diagnose=False)
+    loguru.add(
+        sys.stdout,
+        serialize=scenario != "loguru-text",
+        format="{message}",
+        backtrace=False,
+        diagnose=False,
+    )
     logger = loguru.bind(**context)
     if scenario == "loguru-error":
         try:

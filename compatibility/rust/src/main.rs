@@ -10,7 +10,18 @@ fn emit(scenario: &str) {
 
 fn main() {
     let scenario = std::env::args().nth(1).expect("scenario argument");
-    let base = tracing_subscriber::fmt().with_writer(std::io::stdout).with_ansi(false);
+    if scenario == "env-logger-text" {
+        env_logger::Builder::new()
+            .filter_level(log::LevelFilter::Warn)
+            .target(env_logger::Target::Stdout)
+            .write_style(env_logger::WriteStyle::Never)
+            .init();
+        log::warn!("example {scenario}");
+        return;
+    }
+    let base = tracing_subscriber::fmt()
+        .with_writer(std::io::stdout)
+        .with_ansi(false);
     if scenario == "tracing-text" {
         base.without_time().init();
     } else if scenario == "tracing-flat" {
