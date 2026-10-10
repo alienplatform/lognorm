@@ -15,7 +15,7 @@ No per-application parser configuration is required.
 - **Original input preserved.** Access the exact record alongside its normalized values.
 - **Safe fallbacks.** Plain text passes through; malformed, duplicate-key, or oversized JSON retains its original input.
 - **Optional OTLP output.** Convert normalized logs into OpenTelemetry protobuf records.
-- **Small synchronous API.** No async runtime, network, or storage required. Plain-text and oversized fallback paths allocate nothing.
+- **Small synchronous API.** No async runtime, network, or storage required. Plain text without display cleanup and oversized fallback paths allocate nothing.
 
 ## Supported logging libraries
 
