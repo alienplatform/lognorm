@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Verify the boundary between native console output and complete log records."""
 
+import argparse
 from decimal import Decimal
 import json
 import subprocess
@@ -9,6 +10,9 @@ from run import ROOT, run, same_json
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--engine", choices=["node", "bun"], default="node")
+    args = parser.parse_args()
     # Native console inspection is text and can span physical lines. A JSON
     # console call is a separate, structured record. Both use fresh generic data.
     script = """
@@ -20,7 +24,7 @@ def main():
     console.log(JSON.stringify({message: 'example JSON output', level: 'WARN', payload}));
     """
     emitted = subprocess.run(
-        ["node", "--input-type=module", "-e", script],
+        [args.engine, "--input-type=module", "-e", script],
         capture_output=True,
         text=True,
         check=True,

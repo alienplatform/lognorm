@@ -131,12 +131,14 @@ The no-target tracing producer first failed message selection and now passes.
 The 37 structured fixtures also pass 12,799 truncation boundaries and the OTLP
 HTTP protobuf round-trip suite.
 
-All 11 profiles in `compatibility/versions.json` passed locally: 126 fresh
+All 12 version/runtime profiles in `compatibility/versions.json` passed locally: 147 fresh
 logger/configuration runs across multiple direct dependency versions. Resolved
 manifests and lockfiles were captured outside the tracked source. A separate
 failure experiment verified that verification errors propagate and retain the
 resolved dependency evidence. Native Node console inspection produced 17 text
-lines; a JSON console call remained one typed record. Both pass the framing
+lines under Node and 45 under Bun 1.4.0; a JSON console call remained one typed
+record in both. The JavaScript sweep includes Pino 8.21.0, 9.14.0, and 10.4.0;
+all 21 JavaScript configurations also passed under Bun. Both pass the framing
 boundary check.
 
 A five-minute continuing-corpus fuzz run exercised 6,271,923 inputs without a

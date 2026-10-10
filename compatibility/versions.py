@@ -91,6 +91,8 @@ def main():
                         profile["runtime"],
                         "--producer-root",
                         str(destination),
+                        "--node-engine",
+                        profile.get("engine", "node"),
                     ],
                     ROOT,
                 )

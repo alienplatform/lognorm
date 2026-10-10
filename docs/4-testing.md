@@ -155,13 +155,14 @@ reproducer for every discovered failure and turn it into a permanent regression.
 
 ## Ongoing validation
 
-The extended-validation workflow runs every day and on pull requests. Eleven
-version profiles exercise three generations of the JavaScript, Python, and Rust
-producers and two hclog versions. The default locked producer matrix remains a
+The extended-validation workflow runs every day and on pull requests. Twelve
+version/runtime profiles exercise three generations of the JavaScript, Python, and Rust
+producers, a Bun runtime profile, and two hclog versions. The default locked producer matrix remains a
 separate release check. A successful version sweep does not broaden support to
 all custom formatters or all intermediate releases.
 
-`python3 compatibility/versions.py` runs every profile locally. Select one with
+`python3 compatibility/versions.py` runs every profile locally and requires
+Node, Bun, Python, Rust, Go, npm, and uv. Select one with
 `--profile node-older`, or save evidence with `--artifacts /tmp/version-results`.
 The runner copies only generic producer code into temporary environments and
 never edits pinned manifests or refreshes fixtures. It validates fresh output
@@ -197,5 +198,6 @@ generic test data.
 `python3 compatibility/framing.py` exercises native Node console inspection with
 an object spanning physical lines, alongside a JSON console call. Each physical
 text line remains intact without invented fields; the JSON call preserves its
-typed fields. This demonstrates the framing boundary with actual console output
+typed fields. Use `--engine bun` to exercise Bun’s different console formatting.
+This demonstrates the framing boundary with actual console output
 rather than pretending the parser can assemble or reinterpret arbitrary text.

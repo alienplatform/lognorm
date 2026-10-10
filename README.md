@@ -111,7 +111,8 @@ replay sanitized producer fixtures. `python3 compatibility/run.py --refresh`
 explicitly refreshes verified fixtures; review their diff before committing.
 
 Daily CI runs the [version matrix](compatibility/versions.json) and 15 minutes
-of fuzzing with a continuing corpus. Pull requests run the same matrix and a
+of fuzzing with a continuing corpus. The version sweep also exercises Bun and
+requires it locally. Pull requests run the same matrix and a
 two-minute fuzz check. Resolved version lockfiles and fuzz evidence are retained
 as workflow artifacts. See [extended validation](docs/4-testing.md#ongoing-validation).
 

@@ -230,12 +230,15 @@ def main():
         help="write verified raw producer output; expectations stay independent",
     )
     parser.add_argument("--runtime", choices=["node", "python", "rust", "go"])
+    parser.add_argument("--node-engine", choices=["node", "bun"], default="node")
     parser.add_argument(
         "--producer-root",
         type=Path,
         help="isolated producer directories for version sweeps",
     )
     args = parser.parse_args()
+    if args.refresh and args.node_engine != "node":
+        parser.error("fixture refresh requires the pinned Node runtime")
     if args.refresh and args.runtime:
         parser.error("fixture refresh requires every runtime")
     parser_root = args.producer_root or HERE
@@ -263,7 +266,7 @@ def main():
     for case in cases:
         runtime, name = case["runtime"], case["scenario"]
         if runtime == "node":
-            command = ["node", str(parser_root / "node/producer.mjs"), name]
+            command = [args.node_engine, str(parser_root / "node/producer.mjs"), name]
         elif runtime == "python":
             command = [
                 str(parser_root / "python/.venv/bin/python"),

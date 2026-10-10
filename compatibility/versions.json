@@ -9,7 +9,11 @@
   },
   "node-previous": {
     "runtime": "node",
-    "dependencies": { "pino": "9.6.0", "winston": "3.17.0", "bunyan": "1.8.15" }
+    "dependencies": {
+      "pino": "9.14.0",
+      "winston": "3.17.0",
+      "bunyan": "1.8.15"
+    }
   },
   "node-pinned": {
     "runtime": "node",
@@ -72,10 +76,23 @@
   },
   "go-older": {
     "runtime": "go",
-    "dependencies": { "github.com/hashicorp/go-hclog": "v1.5.0" }
+    "dependencies": {
+      "github.com/hashicorp/go-hclog": "v1.5.0"
+    }
   },
   "go-pinned": {
     "runtime": "go",
-    "dependencies": { "github.com/hashicorp/go-hclog": "v1.6.3" }
+    "dependencies": {
+      "github.com/hashicorp/go-hclog": "v1.6.3"
+    }
+  },
+  "bun-previous": {
+    "runtime": "node",
+    "engine": "bun",
+    "dependencies": {
+      "pino": "9.14.0",
+      "winston": "3.17.0",
+      "bunyan": "1.8.15"
+    }
   }
 }
