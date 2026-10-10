@@ -121,3 +121,40 @@ python3 fuzz/seed.py fuzz/corpus/otlp-audit
 cargo fuzz run normalize fuzz/corpus/otlp-audit -- \
   -max_total_time=45 -max_len=8192 -verbosity=0 -print_final_stats=1
 ```
+
+## Extended compatibility and continuing fuzzing
+
+The pinned suite now passes 43 real-library configurations. New cases cover
+Pino mixins, multiple streams, and nested fields; tracing without a target and
+flattened events with spans; and hclog JSON, child context, and real errors.
+The no-target tracing producer first failed message selection and now passes.
+The 37 structured fixtures also pass 12,799 truncation boundaries and the OTLP
+HTTP protobuf round-trip suite.
+
+All 11 profiles in `compatibility/versions.json` passed locally: 126 fresh
+logger/configuration runs across multiple direct dependency versions. Resolved
+manifests and lockfiles were captured outside the tracked source. A separate
+failure experiment verified that verification errors propagate and retain the
+resolved dependency evidence. Native Node console inspection produced 17 text
+lines; a JSON console call remained one typed record. Both pass the framing
+boundary check.
+
+A five-minute continuing-corpus fuzz run exercised 6,271,923 inputs without a
+crash or failed assertion, with a 64 KiB input cap and peak sanitizer RSS of
+638 MiB. It started with 1,332 corpus files, including newly added generic
+producer seeds. This run covered the recognition behavior before a final
+semantically equivalent predicate-order optimization; the pull-request fuzz job
+checks the committed code. macOS reported a symbolizer warning; the process
+completed successfully and emitted final statistics.
+
+```sh
+cargo fuzz run normalize fuzz/corpus/otlp-audit -- \
+  -max_total_time=300 -max_len=65536 -rss_limit_mb=2048 \
+  -timeout=10 -verbosity=0 -print_final_stats=1
+```
+
+All-feature tests, Clippy, and crate archive compilation pass locally. Actionlint
+accepts the extended workflow. Daily CI is configured for 15-minute fuzz runs
+with a continuing corpus and all version profiles; PRs run two-minute fuzzing
+and the same profiles. Scheduled runs begin once the workflow reaches the
+default branch. This evidence does not establish a live collector integration.

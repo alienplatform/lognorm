@@ -25,7 +25,14 @@ if (scenario.startsWith("pino-")) {
   if (scenario === "pino-message-key") options.messageKey = "message";
   if (scenario === "pino-base-null") options.base = null;
   if (scenario === "pino-custom-level") options.customLevels = { audit: 35 };
-  let logger = pino(options, pino.destination({ sync: true }));
+  if (scenario === "pino-mixin")
+    options.mixin = () => ({ component: "synthetic" });
+  if (scenario === "pino-nested-key") options.nestedKey = "data";
+  const destination =
+    scenario === "pino-multistream"
+      ? pino.multistream([{ stream: process.stdout }])
+      : pino.destination({ sync: true });
+  let logger = pino(options, destination);
   if (scenario === "pino-child")
     logger = logger.child({ component: "synthetic" });
   if (scenario === "pino-custom-level") logger.audit(context, message);

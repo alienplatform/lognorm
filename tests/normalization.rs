@@ -346,3 +346,20 @@ proptest! {
         prop_assert_eq!(log.original(), input.as_str());
     }
 }
+
+#[test]
+fn hclog_aliases_participate_in_consensus_without_dropping_fields() {
+    let input = r#"{"@message":"ready","@level":"warn","@timestamp":"2023-11-14T22:13:20.123000Z","count":3}"#;
+    let log = parse(input);
+    assert_eq!(log.message(), "ready");
+    assert_eq!(log.severity(), Some(Severity::Warn));
+    assert_eq!(log.timestamp(), Timestamp::new(1700000000, 123000000));
+    assert_eq!(log.fields()["count"], 3);
+    let conflicting = r#"{"@message":"one","@level":"warn","msg":"two","level":"error"}"#;
+    let log = parse(conflicting);
+    assert_eq!(log.message(), conflicting);
+    assert_eq!(log.severity(), None);
+    assert_eq!(log.fields().len(), 4);
+    let unknown = r#"{"@message":"ready","@level":"custom"}"#;
+    assert_eq!(parse(unknown).message(), unknown);
+}

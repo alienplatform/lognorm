@@ -45,5 +45,10 @@ jobs:
         with:
           version: '0.8.11'
           python-version: '3.12'
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version: '1.24.x'
+          cache: false
       - run: python3 compatibility/run.py
+      - run: python3 compatibility/framing.py
       - run: git diff --exit-code

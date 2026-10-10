@@ -7,3 +7,6 @@
 /fuzz/target/
 /fuzz/corpus/
 /fuzz/artifacts/
+
+/compatibility/go/producer
+/compatibility/version-results/

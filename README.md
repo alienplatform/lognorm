@@ -19,17 +19,21 @@ No per-application parser configuration is required.
 
 ## Supported logging libraries
 
-Tested against output from the actual libraries across **35 configurations**:
+Tested against output from the actual libraries across **43 configurations**:
 
 **JavaScript and TypeScript**
 
-- [Pino](https://github.com/pinojs/pino) — JSON output, child loggers, errors, renamed message fields, and timestamp options.
+- [Pino](https://github.com/pinojs/pino) — JSON output, child loggers, errors, renamed message fields, timestamp options, mixins, nested fields, and multiple streams.
 - [Winston](https://github.com/winstonjs/winston) — JSON output, timestamps, metadata, and errors.
 - [Bunyan](https://github.com/trentm/node-bunyan) — JSON output, child loggers, and errors.
 
 **Rust**
 
-- [tracing-subscriber](https://github.com/tokio-rs/tracing) — JSON output with nested or flattened event fields, span context, and optional timestamps.
+- [tracing-subscriber](https://github.com/tokio-rs/tracing) — JSON output with nested or flattened event fields, span context, optional timestamps, and disabled targets.
+
+**Go**
+
+- [hclog](https://github.com/hashicorp/go-hclog) — JSON output, child context, and errors.
 
 **Python**
 
@@ -93,6 +97,7 @@ metadata, observed time, batching, and transport. See [integration](docs/7-integ
 cargo test --all-features --locked
 cargo clippy --all-targets --all-features --locked -- -D warnings
 python3 compatibility/run.py
+python3 compatibility/versions.py
 cargo bench --all-features --bench normalize
 cargo test --test allocations -- --nocapture
 # With nightly Rust and cargo-fuzz installed, choose an empty corpus directory:
@@ -100,10 +105,15 @@ python3 fuzz/seed.py fuzz/corpus/new-run
 cargo fuzz run normalize fuzz/corpus/new-run -- -max_total_time=30
 ```
 
-The compatibility command needs Rust, Node, Python, npm, and uv. It installs
-locked dependencies and runs 35 real logger configurations. Fast Rust tests
+The compatibility command needs Rust, Node, Python, Go, npm, and uv. It installs
+locked dependencies and runs 43 real logger configurations. Fast Rust tests
 replay sanitized producer fixtures. `python3 compatibility/run.py --refresh`
 explicitly refreshes verified fixtures; review their diff before committing.
+
+Daily CI runs the [version matrix](compatibility/versions.json) and 15 minutes
+of fuzzing with a continuing corpus. Pull requests run the same matrix and a
+two-minute fuzz check. Resolved version lockfiles and fuzz evidence are retained
+as workflow artifacts. See [extended validation](docs/4-testing.md#ongoing-validation).
 
 The method combines upstream codec source/test review, real-library execution,
 independent preservation checks, generative regressions, and OTLP HTTP round

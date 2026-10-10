@@ -6,7 +6,11 @@ import sys
 
 import structlog
 from loguru import logger as loguru
-from pythonjsonlogger.json import JsonFormatter
+
+try:
+    from pythonjsonlogger.json import JsonFormatter
+except ModuleNotFoundError:
+    from pythonjsonlogger.jsonlogger import JsonFormatter
 
 scenario = sys.argv[1]
 message = f"example {scenario}"

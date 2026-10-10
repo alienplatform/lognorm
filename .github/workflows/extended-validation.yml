@@ -1,0 +1,98 @@
+name: Extended validation
+
+on:
+  pull_request:
+  schedule:
+    - cron: '23 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: extended-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  versions:
+    name: Logger versions (${{ matrix.profile }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [node-older, node-previous, node-pinned, python-older, python-previous, python-pinned, rust-older, rust-previous, rust-pinned, go-older, go-pinned]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        if: startsWith(matrix.profile, 'node-')
+        with:
+          node-version: '22'
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        if: startsWith(matrix.profile, 'python-')
+        with:
+          version: '0.8.11'
+          python-version: '3.12'
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        if: startsWith(matrix.profile, 'go-')
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - run: python3 compatibility/versions.py --profile '${{ matrix.profile }}' --artifacts compatibility/version-results
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: versions-${{ matrix.profile }}
+          path: compatibility/version-results
+          if-no-files-found: error
+          retention-days: 14
+
+  fuzz:
+    name: Sustained fuzzing
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+        with:
+          toolchain: nightly
+      - run: cargo install cargo-fuzz --version 0.13.2 --locked
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: fuzz/corpus/normalize
+          key: fuzz-corpus-v1-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: fuzz-corpus-v1-${{ runner.os }}-
+      - name: Add checked synthetic seeds to the continuing corpus
+        run: |
+          python3 fuzz/seed.py /tmp/lognorm-seeds
+          mkdir -p fuzz/corpus/normalize
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          for seed in Path('/tmp/lognorm-seeds').iterdir():
+              data = seed.read_bytes()
+              destination = Path('fuzz/corpus/normalize') / hashlib.sha256(data).hexdigest()
+              if not destination.exists():
+                  destination.write_bytes(data)
+          PY
+      - name: Fuzz normalization and OTLP encoding
+        env:
+          SECONDS_TO_RUN: ${{ github.event_name == 'pull_request' && '120' || '900' }}
+        run: |
+          set -o pipefail
+          rustc -Vv > fuzz/toolchain.txt
+          cargo fuzz run normalize fuzz/corpus/normalize -- \
+            -max_total_time="$SECONDS_TO_RUN" -max_len=65536 -rss_limit_mb=2048 \
+            -timeout=10 -print_final_stats=1 2>&1 | tee fuzz/run.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: fuzz-evidence
+          path: |
+            fuzz/run.log
+            fuzz/toolchain.txt
+            fuzz/artifacts
+            fuzz/corpus/normalize
+          if-no-files-found: warn
+          retention-days: 14

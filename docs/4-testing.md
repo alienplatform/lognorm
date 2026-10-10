@@ -74,14 +74,15 @@ separately and cannot replace pinned tests.
 
 | Producer | Configurations |
 | --- | --- |
-| Pino | Numeric levels, uppercase formatter, ISO time, child context, errors |
+| Pino | Numeric levels, uppercase formatter, ISO time, child context, errors, mixins, nested key, multiple streams |
 | Winston | JSON, timestamp, metadata, errors, text |
 | Bunyan | Numeric levels, child fields, errors |
-| tracing-subscriber | Nested fields, flattened fields, spans, absent time, text |
+| tracing-subscriber | Nested fields, flattened fields, spans, absent time, disabled target, text |
 | log / env_logger | Default text formatter, stdout collection |
 | Python logging | Plain formatter, python-json-logger, renamed standard keys |
 | structlog | JSON renderer, level and time processors, context, exceptions |
 | Loguru | Serialized records, bound extras, exceptions, text |
+| hclog | JSON, child context, errors |
 | Console | Plain messages, Unicode, multiline text |
 
 Structured producers exercise nested data, arrays, booleans, numeric values,
@@ -151,3 +152,50 @@ cannot recover from aborts or process-wide resource exhaustion. See Rust’s
 [allocation failure behavior](https://doc.rust-lang.org/std/alloc/fn.handle_alloc_error.html).
 Keep a minimized
 reproducer for every discovered failure and turn it into a permanent regression.
+
+## Ongoing validation
+
+The extended-validation workflow runs every day and on pull requests. Eleven
+version profiles exercise three generations of the JavaScript, Python, and Rust
+producers and two hclog versions. The default locked producer matrix remains a
+separate release check. A successful version sweep does not broaden support to
+all custom formatters or all intermediate releases.
+
+`python3 compatibility/versions.py` runs every profile locally. Select one with
+`--profile node-older`, or save evidence with `--artifacts /tmp/version-results`.
+The runner copies only generic producer code into temporary environments and
+never edits pinned manifests or refreshes fixtures. It validates fresh output
+with the same independently authored expectations as the pinned suite.
+
+Direct logger versions are fixed in `compatibility/versions.json`. Transitive
+versions resolve for each sweep, then installs use those generated lockfiles.
+CI jobs retain the resolved manifests and lockfiles for 14 days, including
+resolution or producer verification failures. A failed resolution may only
+provide a partial lockfile; retain its workflow log as well.
+Reproduce a dependency resolution by checking out the tested commit, copying its
+producer into a temporary runtime directory, replacing its manifests/lockfiles
+with the artifacts, and running `compatibility/run.py --runtime <runtime>
+--producer-root <temporary-parent>`. A resolution, installation, or producer
+failure fails the job rather than silently skipping that profile.
+
+Daily fuzzing runs for 15 minutes; pull requests run for two minutes. Both cover
+normalization, OTLP conversion, and protobuf encoding with a 64 KiB fuzz input
+cap. Separate deterministic tests cover the larger default byte boundary.
+The continuing corpus is restored from a versioned cache and augmented with
+checked synthetic seeds. Cache eviction can reset discoveries, so every run
+also retains corpus, crash artifacts, toolchain details, and logs for 14 days.
+No cache or artifact is a permanent regression: minimize a failure and add an
+independent checked test. Fuzz failures fail CI; never rerun merely to get green.
+
+Only independently constructed generic records belong in this repository or its
+CI artifacts. Never feed private records or private source into public fuzzing,
+fixture refresh, version sweeps, or report generation. Do not keep identifying
+message wording, paths, keys, identifiers, or configurations by merely replacing
+a name. Reproduce the underlying format with an upstream logger and fresh,
+generic test data.
+
+`python3 compatibility/framing.py` exercises native Node console inspection with
+an object spanning physical lines, alongside a JSON console call. Each physical
+text line remains intact without invented fields; the JSON call preserves its
+typed fields. This demonstrates the framing boundary with actual console output
+rather than pretending the parser can assemble or reinterpret arbitrary text.

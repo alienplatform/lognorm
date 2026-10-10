@@ -14,12 +14,17 @@ pub(crate) fn at<'a>(fields: &'a Map<String, Value>, path: &[&str]) -> Option<&'
 }
 
 fn tracing(fields: &Map<String, Value>) -> bool {
-    fields.get("target").is_some_and(Value::is_string)
-        && fields
-            .get("level")
-            .and_then(Value::as_str)
-            .and_then(severity::name)
-            .is_some()
+    fields
+        .get("level")
+        .and_then(Value::as_str)
+        .and_then(severity::name)
+        .is_some()
+        && at(fields, &["fields", "message"]).is_some_and(Value::is_string)
+        && (fields.get("target").is_some_and(Value::is_string)
+            || fields
+                .get("timestamp")
+                .and_then(timestamp::rfc3339)
+                .is_some())
 }
 
 fn loguru(fields: &Map<String, Value>) -> bool {
@@ -39,9 +44,17 @@ fn pino(fields: &Map<String, Value>) -> bool {
 }
 
 pub(crate) fn message_path(fields: &Map<String, Value>) -> Option<Path> {
-    let candidates: [(Path, bool); 5] = [
+    let candidates: [(Path, bool); 6] = [
         (&["msg"], true),
         (&["message"], true),
+        (
+            &["@message"],
+            fields
+                .get("@level")
+                .and_then(Value::as_str)
+                .and_then(severity::name)
+                .is_some(),
+        ),
         (&["fields", "message"], tracing(fields)),
         (&["record", "message"], loguru(fields)),
         (
@@ -104,6 +117,7 @@ pub(crate) fn severity(fields: &Map<String, Value>) -> Option<Severity> {
     let mut result = Consensus::new();
     for key in [
         "level",
+        "@level",
         "severity",
         "severityText",
         "severity_text",

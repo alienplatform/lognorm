@@ -24,6 +24,10 @@ display cleanup as well as decoding so the size limit bounds work.
 Recognize string `msg` and `message` fields. Recognize `fields.message` in a
 tracing envelope. Recognize structlog's string `event` when logger metadata
 supports that interpretation. Recognize `record.message` in serialized Loguru.
+Recognize hclog's `@message` alongside a known textual `@level`.
+A nested tracing message requires a known textual `level` plus either a string
+`target` or a valid RFC3339 `timestamp`. Disabling both target and time removes
+that signature; preserve the fields without guessing the nested message.
 
 When multiple message candidates disagree, use the original line. If there is
 no message, use the original line. Never stringify a nested business object and
@@ -40,7 +44,7 @@ severity fields on their 1–24 scale. Recognize Python's `levelno` scale. Recog
 Pino and Bunyan numeric `level` only when the rest of the record supports their
 conventions, such as `msg` and `time`, or `msg`, `pid`, and `hostname`
 when timestamps are disabled. Loguru exposes textual and numeric level
-information under `record.level`.
+information under `record.level`. hclog uses textual `@level`.
 
 Two recognized severities that disagree produce `None`. Unrecognized custom
 levels remain in the fields. Text content and HTTP status codes do not determine

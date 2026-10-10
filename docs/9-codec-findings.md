@@ -169,3 +169,19 @@ cursor movement.
 Independent regressions cover charset selection, DCS payload suppression, OSC
 hyperlinks, malformed prefixes followed by Unicode, and plain multiline text.
 This reuses a maintained grammar rather than extending color-only escape logic.
+
+## hclog JSON conventions
+
+Reviewed upstream hclog v1.6.3 at
+[`d12136aa2e51933c460084f5083b6d5bb9d41960`](https://github.com/hashicorp/go-hclog/tree/d12136aa2e51933c460084f5083b6d5bb9d41960).
+Its [`jsonMapEntry`](https://github.com/hashicorp/go-hclog/blob/d12136aa2e51933c460084f5083b6d5bb9d41960/intlogger.go#L687)
+uses `@message`, `@level`, `@timestamp`, and optional `@module`. Its
+[`TestLogger_JSON`](https://github.com/hashicorp/go-hclog/blob/d12136aa2e51933c460084f5083b6d5bb9d41960/logger_test.go#L838)
+checks structured fields, time configuration, child context, and error values.
+Custom timestamp layouts are possible; only recognized RFC3339 values receive
+normalized time. Unknown levels remain unresolved.
+
+The generic Go producer runs the actual library with JSON output, child context,
+and an actual error. Complete typed fields are compared independently. Alias
+conflicts and unknown levels have separately authored regressions. No upstream
+implementation or fixture was copied into these tests.

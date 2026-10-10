@@ -41,7 +41,7 @@ message nor the extraction replaces the original application data.
 ## Scope
 
 The first release covers structured output from Pino, Winston, Bunyan, Rust
-tracing, Python logging with a JSON formatter, structlog, and serialized Loguru.
+tracing, Python logging with a JSON formatter, structlog, serialized Loguru, and hclog JSON.
 Ordinary console and text logger output passes through unchanged.
 
 The library does not reconstruct fields from arbitrary custom text. Container
