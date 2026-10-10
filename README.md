@@ -6,33 +6,70 @@ Turn application output into a readable message, recognized severity and time,
 and a complete map of typed application fields. Preserve the original record.
 No per-application parser configuration is required.
 
+## Features
+
+- **Automatic detection.** Recognizes common logger conventions without choosing a parser.
+- **Readable messages.** Extracts the message and removes terminal escape sequences for display.
+- **Structured fields.** Keeps the complete JSON object, including nested objects, arrays, and exact numbers.
+- **Severity and timestamps.** Recognizes standard levels and source timestamps, with nanosecond precision.
+- **Original input preserved.** Access the exact record alongside its normalized values.
+- **Safe fallbacks.** Plain text passes through; malformed, duplicate-key, or oversized JSON retains its original input.
+- **Optional OTLP output.** Convert normalized logs into OpenTelemetry protobuf records.
+- **Small synchronous API.** No async runtime, network, or storage required. Plain-text and oversized fallback paths allocate nothing.
+
+## Supported logging libraries
+
+Tested against output from the actual libraries across **35 configurations**:
+
+**JavaScript and TypeScript**
+
+- [Pino](https://github.com/pinojs/pino) — JSON output, child loggers, errors, renamed message fields, and timestamp options.
+- [Winston](https://github.com/winstonjs/winston) — JSON output, timestamps, metadata, and errors.
+- [Bunyan](https://github.com/trentm/node-bunyan) — JSON output, child loggers, and errors.
+
+**Rust**
+
+- [tracing-subscriber](https://github.com/tokio-rs/tracing) — JSON output with nested or flattened event fields, span context, and optional timestamps.
+
+**Python**
+
+- [python-json-logger](https://github.com/nhairs/python-json-logger) — standard `logging` with JSON formatting, renamed fields, and exceptions.
+- [structlog](https://github.com/hynek/structlog) — JSON output, timestamps, and exceptions.
+- [Loguru](https://github.com/Delgan/loguru) — serialized JSON output and exceptions.
+
+Plain-text output from console logging, Python `logging`, `env_logger`, and other
+text loggers passes through without reconstructing structured fields.
+Unknown JSON objects still expose all their fields, even when their message,
+severity, or timestamp conventions are not recognized.
+
+Support covers the tested configurations, not every custom formatter. Conflicting
+metadata stays unresolved, and JSON strings inside fields are not recursively
+parsed. See the [recognition rules](docs/2-recognition.md) and
+[compatibility tests](compatibility/).
+
+## Quick start
+
 ```rust
 use lognorm::{parse, Severity};
 
-let input = r#"{"level":"WARN","msg":"Request rejected","statusCode":401}"#;
+let input = r#"{"level":"WARN","msg":"Request rejected","statusCode":401,"req":{"path":"/v1/check"}}"#;
 let log = parse(input);
 
 assert_eq!(log.message(), "Request rejected");
 assert_eq!(log.severity(), Some(Severity::Warn));
 assert_eq!(log.fields()["statusCode"], 401);
+assert_eq!(log.fields()["req"]["path"], "/v1/check");
 assert_eq!(log.original(), input);
 ```
 
-The synchronous core has no runtime, network, or storage dependency. Pass one
-complete UTF-8 record after framing. The default input limit is 1 MiB; use
-`Parser::with_max_bytes` to change it.
+Your log viewer can show **Request rejected** while retaining `statusCode` and
+`req.path` as structured fields for filtering and queries.
 
-## Recognition
+Pass one complete UTF-8 record after framing. The default input limit is 1 MiB;
+use `Parser::with_max_bytes` to change it. See the [API guide](docs/3-api.md).
 
-Tested conventions include Pino, Bunyan, Winston JSON, tracing-subscriber JSON,
-python-json-logger, structlog JSON, and serialized Loguru. Plain text passes
-through. Conflicting recognized metadata stays unresolved. Custom formats can
-still retain all JSON fields even when metadata cannot be inferred.
-
-Objects, arrays, booleans, nulls, and exact JSON numbers remain intact. Duplicate
-keys and malformed or excessively nested JSON fall back to the original record.
-ANSI cleanup affects only the display message. JSON strings inside fields are
-not recursively parsed. See [recognition rules](docs/2-recognition.md).
+Requires Rust 1.88 or newer. The first release is in development and has not yet
+been published to crates.io.
 
 ## OTLP
 
