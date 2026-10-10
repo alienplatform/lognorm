@@ -9,11 +9,16 @@ fn preserves_exact_numbers_and_all_application_fields() {
     let log = parse(input);
     assert_eq!(log.original(), input);
     assert_eq!(log.message(), "ready");
-    assert_eq!(log.fields()["big"].to_string(), "184467440737095516160");
-    assert_eq!(log.fields()["tiny"].to_string(), "0.123456789012345678901");
     assert_eq!(
         Value::Object(log.fields().clone()),
-        serde_json::from_str::<Value>(input).unwrap()
+        json!({
+            "msg": "ready",
+            // Beyond what serde_json's number type holds: exact literal text.
+            "big": "184467440737095516160",
+            "tiny": "0.123456789012345678901",
+            "nested": {"items": [true, null, 1, "λ"]},
+            "body": "{\"msg\":\"inner\"}"
+        })
     );
 }
 
@@ -151,6 +156,9 @@ fn arbitrary_json() -> impl Strategy<Value = Value> {
         Just(Value::Null),
         any::<bool>().prop_map(Value::Bool),
         any::<i64>().prop_map(|n| json!(n)),
+        any::<f64>()
+            .prop_filter("JSON numbers are finite", |n| n.is_finite())
+            .prop_map(|n| json!(n)),
         ".{0,40}".prop_map(Value::String)
     ];
     leaf.prop_recursive(5, 64, 8, |inner| {
@@ -181,28 +189,76 @@ proptest! {
 }
 
 #[test]
-fn source_review_numeric_edges_keep_exact_representations() {
-    for literal in [
-        "9007199254740993",
-        "18446744073709551615",
-        "184467440737095516160",
-        "0.123456789012345678901",
-        "1e400",
-        "-0.0",
+fn source_review_numeric_edges_are_exact_numbers_or_exact_literals() {
+    for (literal, expected) in [
+        ("9007199254740993", json!(9007199254740993_u64)),
+        ("18446744073709551615", json!(u64::MAX)),
+        ("-9223372036854775808", json!(i64::MIN)),
+        ("184467440737095516160", json!("184467440737095516160")),
+        ("-9223372036854775809", json!("-9223372036854775809")),
+        ("0.123456789012345678901", json!("0.123456789012345678901")),
+        ("1e-400", json!("1e-400")),
+        ("1.50", json!(1.5)),
+        ("1E5", json!(100000.0)),
+        ("1e-06", json!(0.000001)),
+        ("1700000000.123", json!(1700000000.123)),
+        ("-0.0", json!(-0.0)),
+        ("-0", json!(-0.0)),
     ] {
         let input = format!("{{\"values\":[{literal}]}}");
         let log = parse(&input);
         assert_eq!(log.outcome(), ParseOutcome::Structured, "{literal}");
-        let expected: Value = serde_json::from_str(&input).unwrap();
-        assert_eq!(Value::Object(log.fields().clone()), expected, "{literal}");
-        let number = log.fields()["values"][0].to_string();
-        // serde_json normalizes the exponent spelling, but not its precision.
-        assert_eq!(
-            number.to_lowercase().replace("e+", "e"),
-            literal,
-            "{literal}"
-        );
+        let value = &log.fields()["values"][0];
+        assert_eq!(value, &expected, "{literal}");
+        if expected.is_f64() {
+            // Value equality treats -0.0 and 0.0 as equal; the sign must survive.
+            assert_eq!(
+                value.as_f64().unwrap().is_sign_negative(),
+                literal.starts_with('-'),
+                "{literal}"
+            );
+        }
     }
+}
+
+#[test]
+fn numbers_kept_as_literal_text_are_never_recognized_as_text() {
+    let log = parse(r#"{"msg":184467440737095516160,"message":"ready"}"#);
+    assert_eq!(log.message(), "ready");
+    assert_eq!(log.fields()["msg"], "184467440737095516160");
+
+    let input = r#"{"msg":0.123456789012345678901,"level":"WARN"}"#;
+    let log = parse(input);
+    assert_eq!(log.message(), input);
+    assert_eq!(log.severity(), Some(Severity::Warn));
+    assert_eq!(log.fields()["msg"], "0.123456789012345678901");
+}
+
+#[test]
+fn numbers_outside_the_float_range_fall_back_intact() {
+    for literal in ["1e400", "-1e400", &"9".repeat(400)] {
+        let input = format!("{{\"msg\":\"ready\",\"n\":{literal}}}");
+        let log = parse(&input);
+        assert_eq!(log.outcome(), ParseOutcome::InvalidJson, "{literal}");
+        assert_eq!(log.original(), input);
+        assert!(log.fields().is_empty());
+    }
+}
+
+#[test]
+fn digits_inside_keys_and_strings_do_not_shift_number_literals() {
+    let input = r#"{"a\"1":"2\\\"3","k-1":[1,"-2",3.5e1,{"x9":-0.25,"e":"1e400"}],"t":true,"z":0}"#;
+    let log = parse(input);
+    assert_eq!(log.outcome(), ParseOutcome::Structured);
+    assert_eq!(
+        Value::Object(log.fields().clone()),
+        json!({
+            "a\"1": "2\\\"3",
+            "k-1": [1, "-2", 35.0, {"x9": -0.25, "e": "1e400"}],
+            "t": true,
+            "z": 0
+        })
+    );
 }
 
 #[test]

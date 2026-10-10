@@ -1,6 +1,30 @@
 //! Fast replay of checked output from pinned real logging libraries.
+use std::str::FromStr;
+
+use bigdecimal::BigDecimal;
 use lognorm::{parse, ParseOutcome};
 use serde_json::Value;
+
+// Numbers compare by decimal value: serde_json's own spelling of a number
+// depends on whether some crate in the build enabled arbitrary_precision.
+fn same_json(left: &Value, right: &Value) -> bool {
+    match (left, right) {
+        (Value::Number(left), Value::Number(right)) => {
+            BigDecimal::from_str(&left.to_string()).unwrap()
+                == BigDecimal::from_str(&right.to_string()).unwrap()
+        }
+        (Value::Array(left), Value::Array(right)) => {
+            left.len() == right.len() && left.iter().zip(right).all(|(a, b)| same_json(a, b))
+        }
+        (Value::Object(left), Value::Object(right)) => {
+            left.len() == right.len()
+                && left
+                    .iter()
+                    .all(|(key, value)| right.get(key).is_some_and(|other| same_json(value, other)))
+        }
+        _ => left == right,
+    }
+}
 
 #[test]
 fn checked_real_library_records_retain_message_metadata_and_fields() {
@@ -30,11 +54,9 @@ fn checked_real_library_records_retain_message_metadata_and_fields() {
                 expected["message"].as_str().unwrap(),
                 "{name}"
             );
-            assert_eq!(
-                Value::Object(log.fields().clone()),
-                serde_json::from_str::<Value>(input).unwrap(),
-                "{name}"
-            );
+            let fields = Value::Object(log.fields().clone());
+            let source = serde_json::from_str::<Value>(input).unwrap();
+            assert!(same_json(&fields, &source), "{name}: {fields} != {source}");
             let mut payload = &log.fields()[expected["payloadPath"][0].as_str().unwrap()];
             for key in expected["payloadPath"].as_array().unwrap().iter().skip(1) {
                 payload = &payload[key.as_str().unwrap()];

@@ -480,6 +480,7 @@ dependencies = [
  "bigdecimal",
  "chrono",
  "criterion",
+ "memchr",
  "opentelemetry-proto",
  "proptest",
  "prost",

@@ -18,8 +18,11 @@ otlp = ["dep:opentelemetry-proto"]
 [dependencies]
 anstyle-parse = { version = "1", default-features = false }
 chrono = { version = "0.4", default-features = false, features = ["std"] }
+memchr = "2"
 serde = "1"
-serde_json = { version = "1", features = ["arbitrary_precision"] }
+# Never enable `arbitrary_precision` here: Cargo unifies features, so it would
+# change how every crate in a dependent's build decodes JSON.
+serde_json = "1"
 opentelemetry-proto = { version = "0.31", optional = true, default-features = false, features = ["gen-tonic-messages", "logs"] }
 
 [dev-dependencies]
@@ -28,6 +31,7 @@ criterion = "0.5"
 proptest = "1"
 stats_alloc = "0.1.10"
 prost = "0.14"
+serde = { version = "1", features = ["derive"] }
 
 [[bench]]
 name = "normalize"

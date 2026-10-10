@@ -88,6 +88,21 @@ impl ParsedLog<'_> {
     /// Complete decoded root object, including fields used by other accessors.
     ///
     /// Objects remain nested. On fallback this map is empty.
+    ///
+    /// Numbers never silently lose precision. Integers that fit `u64` or `i64`
+    /// and decimals whose shortest `f64` rendering (as serde_json writes it)
+    /// has the same decimal value are numbers. Other numeric literals, such as integers beyond 64 bits or
+    /// decimals with more digits than `f64` holds, keep their exact literal
+    /// text as a string. Recognition still treats those values as numbers, so
+    /// they are never chosen as a message, level, or timestamp text. This is
+    /// the same in every build: lognorm does not enable serde_json's global
+    /// `arbitrary_precision` feature.
+    ///
+    /// ```
+    /// let log = lognorm::parse(r#"{"ratio":1.50,"id":184467440737095516160}"#);
+    /// assert_eq!(log.fields()["ratio"], 1.5);
+    /// assert_eq!(log.fields()["id"], "184467440737095516160");
+    /// ```
     pub fn fields(&self) -> &Map<String, Value> {
         &self.fields
     }
@@ -126,35 +141,35 @@ impl Parser {
     /// The byte limit bounds input size, not total allocations. Allocation failure
     /// and insufficient thread stack are not recoverable parsing outcomes.
     pub fn parse<'a>(&self, input: &'a str) -> ParsedLog<'a> {
-        let (fields, outcome) = if input.len() > self.max_bytes {
-            (Map::new(), ParseOutcome::InputLimit)
+        let (fields, view, outcome) = if input.len() > self.max_bytes {
+            (Map::new(), None, ParseOutcome::InputLimit)
         } else if !input.trim().starts_with('{') {
-            (Map::new(), ParseOutcome::Text)
+            (Map::new(), None, ParseOutcome::Text)
         } else {
             match decode::object(input) {
-                Ok(fields) => (fields, ParseOutcome::Structured),
-                Err(outcome) => (Map::new(), outcome),
+                Ok(decoded) => (
+                    decoded.fields,
+                    decoded.recognition,
+                    ParseOutcome::Structured,
+                ),
+                Err(outcome) => (Map::new(), None, outcome),
             }
         };
+        let recognized = view.as_ref().unwrap_or(&fields);
+        let recognize = !recognized.is_empty();
 
         let mut log = ParsedLog {
             original: input,
-            message_path: if fields.is_empty() {
-                None
-            } else {
-                recognition::message_path(&fields)
-            },
+            message_path: recognize
+                .then(|| recognition::message_path(recognized))
+                .flatten(),
             clean_message: None,
-            severity: if fields.is_empty() {
-                None
-            } else {
-                recognition::severity(&fields)
-            },
-            timestamp: if fields.is_empty() {
-                None
-            } else {
-                recognition::timestamp(&fields)
-            },
+            severity: recognize
+                .then(|| recognition::severity(recognized))
+                .flatten(),
+            timestamp: recognize
+                .then(|| recognition::timestamp(recognized))
+                .flatten(),
             fields,
             outcome,
         };
