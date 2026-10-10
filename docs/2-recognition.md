@@ -14,6 +14,26 @@ map cannot represent both values faithfully. Objects containing the decoder's
 reserved `$serde_json::private::Number` key also fall back intact; interpreting
 that key as ordinary data through the arbitrary-precision visitor would be unsafe.
 
+## Numbers
+
+A library must not change how the rest of a program decodes JSON. serde_json's
+`arbitrary_precision` feature would keep exact number text, but Cargo enables a
+feature for every crate in the build. With it, numbers inside untagged,
+internally tagged, and flattened types elsewhere in the program stop decoding.
+lognorm therefore never enables it, and recovers each number's exact literal
+from the input itself.
+
+- Integers that fit `u64` or `i64` are numbers.
+- Decimals whose shortest `f64` rendering has the same decimal value are numbers.
+  Spelling is not preserved: `1.50` becomes `1.5` and `1E5` becomes `100000.0`.
+- Other finite literals keep their exact text as a string. Examples are integers
+  beyond 64 bits and decimals with more digits than `f64` holds.
+- Literals outside the `f64` range fall back as invalid JSON, with the original
+  intact.
+
+Fields are identical whether or not another crate enables
+`arbitrary_precision`. `original()` remains the exact record.
+
 `original()` returns the exact input, including whitespace and control
 characters. Display cleanup may remove ANSI escapes from `message()` but must
 never alter `original()` or values in `fields()`. Oversized input bypasses
@@ -61,7 +81,9 @@ business field.
 Keep seconds signed and nanoseconds in `0..1_000_000_000`. Preserve subsecond
 precision and reject out-of-range values. Explicit numeric seconds support
 exponent notation using checked decimal arithmetic; nonzero sub-nanosecond
-values are left unresolved rather than rounded. Conflicting recognized timestamps
+values are left unresolved rather than rounded. So are numeric seconds with more
+digits than `f64` holds, which the fields keep as exact text. Real producers
+render binary floats in their shortest form, which always fits. Conflicting recognized timestamps
 produce `None`. No wall clock is consulted by the parser.
 
 ## Text and failures

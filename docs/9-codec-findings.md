@@ -76,8 +76,9 @@ even in that mode. This follows the code; specific overflow cases were not run.
 Synthetic preservation regressions should include `9007199254740993`,
 `18446744073709551615`, a larger integer, `0.123456789012345678901`, `1e400`,
 negative zero, and nested arrays containing these values. Exact number
-representation must survive or the record must fall back according to explicit
-limits; never silently round or stringify a numeric field. Exercise depth just
+value must survive, or the exact literal is kept as text, or the record falls
+back according to explicit limits; never silently round a numeric field. See the
+number rules in [recognition](2-recognition.md#numbers). Exercise depth just
 below, at, and above the configured limit, including arrays. Exceeding a resource
 limit preserves original and produces the documented limit outcome.
 

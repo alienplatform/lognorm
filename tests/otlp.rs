@@ -216,7 +216,7 @@ proptest! {
         let app = decode_value(record.attributes[0].value.as_ref().unwrap());
         match &app["n"] {
             Value::Number(_) => prop_assert!(same_json(&app["n"], &parsed.fields()["n"])),
-            Value::String(value) => prop_assert_eq!(value, &parsed.fields()["n"].to_string()),
+            Value::String(value) => prop_assert_eq!(&Value::String(value.clone()), &parsed.fields()["n"]),
             other => prop_assert!(false, "unexpected numeric conversion: {other}"),
         }
     }

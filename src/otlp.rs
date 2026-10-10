@@ -1,8 +1,9 @@
 //! Optional OTLP protobuf adapter. Transport and collector context stay with callers.
 //!
 //! Application fields are nested under `app`; the body is readable text. JSON
-//! null is represented by an empty OTLP AnyValue. Integer literals outside i64 and decimal
-//! numbers that cannot round-trip through f64 are exported as exact strings.
+//! null is represented by an empty OTLP AnyValue. Integers above i64::MAX are
+//! exported as exact strings, as are the numbers [`ParsedLog::fields`] already
+//! keeps as exact literal strings.
 //! All source values remain available in [`ParsedLog::fields`].
 use opentelemetry_proto::tonic::{
     common::v1::{any_value::Value as OtlpValue, AnyValue, ArrayValue, KeyValue, KeyValueList},
@@ -90,59 +91,14 @@ fn value_to_otlp(value: &Value) -> AnyValue {
             values: values.iter().map(value_to_otlp).collect(),
         })),
         Value::Object(fields) => return object(fields),
-        Value::Number(number) => {
-            if let Some(integer) = number.as_i64() {
-                Some(OtlpValue::IntValue(integer))
-            } else {
-                let text = number.to_string();
-                let integer_literal = !text.bytes().any(|byte| matches!(byte, b'.' | b'e' | b'E'));
-                let double = if integer_literal {
-                    None
-                } else {
-                    number.as_f64().filter(|float| {
-                        serde_json::Number::from_f64(*float).is_some_and(|candidate| {
-                            let candidate = candidate.to_string();
-                            text == candidate
-                                || decimal_parts(&text)
-                                    .is_some_and(|parts| Some(parts) == decimal_parts(&candidate))
-                        })
-                    })
-                };
-                Some(
-                    double
-                        .map(OtlpValue::DoubleValue)
-                        .unwrap_or_else(|| OtlpValue::StringValue(text)),
-                )
-            }
-        }
+        // Decoded numbers are i64, u64, or f64 values that render exactly;
+        // see `ParsedLog::fields`. OTLP has no unsigned integer, so values
+        // above i64::MAX keep their exact digits as a string.
+        Value::Number(number) => Some(match (number.as_i64(), number.as_f64()) {
+            (Some(integer), _) => OtlpValue::IntValue(integer),
+            (None, Some(double)) if number.is_f64() => OtlpValue::DoubleValue(double),
+            _ => OtlpValue::StringValue(number.to_string()),
+        }),
     };
     AnyValue { value }
-}
-
-// Compare finite decimal values, not exponent spelling (1e-06 equals 1e-6).
-// This is only needed when the normal f64 JSON rendering differs from input.
-fn decimal_parts(text: &str) -> Option<(bool, String, i64)> {
-    let negative = text.starts_with('-');
-    let unsigned = text.strip_prefix('-').unwrap_or(text);
-    let (mantissa, exponent) = unsigned.split_once(['e', 'E']).unwrap_or((unsigned, "0"));
-    let fraction_len = mantissa
-        .split_once('.')
-        .map_or(0, |(_, fraction)| fraction.len());
-    let mut digits: String = mantissa
-        .chars()
-        .filter(|ch| *ch != '.')
-        .skip_while(|ch| *ch == '0')
-        .collect();
-    if digits.is_empty() {
-        return Some((negative, digits, 0));
-    }
-    let significant_len = digits.trim_end_matches('0').len();
-    let trailing_zeros = digits.len() - significant_len;
-    digits.truncate(significant_len);
-    let exponent = exponent
-        .parse::<i64>()
-        .ok()?
-        .checked_sub(i64::try_from(fraction_len).ok()?)?
-        .checked_add(i64::try_from(trailing_zeros).ok()?)?;
-    Some((negative, digits, exponent))
 }

@@ -11,7 +11,8 @@ cargo-fuzz = true
 libfuzzer-sys = "0.4"
 lognorm = { path = "..", features = ["otlp"] }
 prost = "0.14"
-serde_json = { version = "1", features = ["arbitrary_precision"] }
+# float_roundtrip makes the independent decode exact, like lognorm's literal parsing.
+serde_json = { version = "1", features = ["float_roundtrip"] }
 
 [[bin]]
 name = "normalize"

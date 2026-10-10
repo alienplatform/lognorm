@@ -132,6 +132,12 @@ exactly the record length and one byte below it, including Unicode records.
 Exercise wide arrays, very long numbers, and long incomplete strings below the
 default limit, in addition to deep nesting.
 
+Generate number literals and check each decoded value against an independent
+decimal library: it is a number with the literal's exact value, or the literal
+itself. CI repeats the suite with serde_json's `arbitrary_precision` enabled by
+the test build, as another crate could, and results must not change. A separate
+test proves that linking lognorm leaves that feature off for dependents.
+
 The fuzz target covers parsing, metadata access, OTLP conversion, and protobuf
 encoding. Keep real producer records and synthetic adversarial cases as seeds.
 Random byte mutation alone is unlikely to reach as many valid structured states

@@ -2,16 +2,38 @@
 
 use libfuzzer_sys::fuzz_target;
 use prost::Message;
+use serde_json::Value;
+
+// lognorm keeps a number as its literal string only when serde_json's number
+// type cannot hold it exactly. Everything else must match an independent decode.
+fn consistent(ours: &Value, independent: &Value) -> bool {
+    match (ours, independent) {
+        (Value::String(literal), Value::Number(number)) => {
+            serde_json::from_str::<Value>(literal).ok() == Some(Value::Number(number.clone()))
+        }
+        (Value::Array(ours), Value::Array(independent)) => {
+            ours.len() == independent.len()
+                && ours.iter().zip(independent).all(|(a, b)| consistent(a, b))
+        }
+        (Value::Object(ours), Value::Object(independent)) => {
+            ours.len() == independent.len()
+                && ours
+                    .iter()
+                    .all(|(key, value)| independent.get(key).is_some_and(|other| consistent(value, other)))
+        }
+        _ => ours == independent,
+    }
+}
 
 fuzz_target!(|input: &str| {
     let parsed = lognorm::parse(input);
     assert_eq!(parsed.original(), input);
     if parsed.outcome() == lognorm::ParseOutcome::Structured {
-        let independently_decoded: serde_json::Value = serde_json::from_str(input).unwrap();
-        assert_eq!(
-            serde_json::Value::Object(parsed.fields().clone()),
-            independently_decoded
-        );
+        let independently_decoded: Value = serde_json::from_str(input).unwrap();
+        assert!(consistent(
+            &Value::Object(parsed.fields().clone()),
+            &independently_decoded
+        ));
     } else {
         assert!(parsed.fields().is_empty());
         assert!(parsed.severity().is_none());

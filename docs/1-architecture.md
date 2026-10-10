@@ -21,7 +21,8 @@ map is never flattened or destructively normalized.
 
 1. Reject semantic parsing when the configured byte limit is exceeded.
 2. Check whether trimmed input looks like a JSON object.
-3. Decode with bounded nesting and exact numeric preservation.
+3. Decode with bounded nesting and lossless numbers, without changing how the
+   rest of the program decodes JSON.
 4. Recognize supported envelopes and common field conventions.
 5. Resolve each metadata category independently.
 6. Return the fields and original bytes regardless of metadata recognition.

@@ -88,6 +88,19 @@ impl ParsedLog<'_> {
     /// Complete decoded root object, including fields used by other accessors.
     ///
     /// Objects remain nested. On fallback this map is empty.
+    ///
+    /// Numbers never silently lose precision. Integers that fit `u64` or `i64`
+    /// and decimals whose shortest `f64` rendering has the same decimal value
+    /// are numbers. Other numeric literals, such as integers beyond 64 bits or
+    /// decimals with more digits than `f64` holds, keep their exact literal
+    /// text as a string. This is the same in every build: lognorm does not
+    /// enable serde_json's global `arbitrary_precision` feature.
+    ///
+    /// ```
+    /// let log = lognorm::parse(r#"{"ratio":1.50,"id":184467440737095516160}"#);
+    /// assert_eq!(log.fields()["ratio"], 1.5);
+    /// assert_eq!(log.fields()["id"], "184467440737095516160");
+    /// ```
     pub fn fields(&self) -> &Map<String, Value> {
         &self.fields
     }

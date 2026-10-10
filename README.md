@@ -10,7 +10,7 @@ No per-application parser configuration is required.
 
 - **Automatic detection.** Recognizes common logger conventions without choosing a parser.
 - **Readable messages.** Extracts the message and removes terminal escape sequences for display.
-- **Structured fields.** Keeps the complete JSON object, including nested objects, arrays, and exact numbers.
+- **Structured fields.** Keeps the complete JSON object, including nested objects, arrays, and lossless numbers. It does not change how the rest of your program decodes JSON.
 - **Severity and timestamps.** Recognizes standard levels and source timestamps, with nanosecond precision.
 - **Original input preserved.** Access the exact record alongside its normalized values.
 - **Safe fallbacks.** Plain text passes through; malformed, duplicate-key, or oversized JSON retains its original input.
