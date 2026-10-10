@@ -34,3 +34,9 @@ The producer corpus is the compatibility record. Version upgrades regenerate
 producer output explicitly and keep semantic assertions independently authored.
 Performance observations identify their environment and are not portable
 guarantees.
+
+Publishing uses `release_always = false`: only merging a release-plz release PR
+triggers publication. Ordinary implementation merges must not publish a crate.
+The workflow uses organization secrets `CRATES_IO_TOKEN` for the registry and
+`REPO_ACCESS_TOKEN` for release PRs whose pushes need to trigger CI. Secret values
+are never read locally or placed in public files.

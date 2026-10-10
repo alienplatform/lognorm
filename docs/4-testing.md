@@ -1,10 +1,48 @@
 # Compatibility and the scientific method
 
-Handwritten JSON samples cannot prove compatibility with a real logger. A test
-must establish what the producer actually emits and whether the parser retains
-its meaning.
+Compatibility requires two complementary sources of evidence:
+
+1. Run real logging libraries in different configurations to establish what
+   applications emit and whether normalization retains its meaning.
+2. Read mature codec and parser implementations, including their tests, to find
+   edge cases, failure behavior, and boundaries that producer examples miss.
+
+Neither replaces the other. Handwritten regression samples test specific edge
+cases; they cannot establish compatibility with a real logger.
+
+## Source review before implementation
+
+Before implementing or extending a parsing behavior, inspect relevant upstream
+code and tests. Start with Vector codecs, VRL, and OpenTelemetry Collector
+Stanza. Use the source-review method in [prior art](6-prior-art.md).
+
+Record the pinned revision, exact source or test link, observed behavior, and
+our intended behavior. Every relevant finding must produce one of:
+
+- An independently written synthetic regression test with explicit expectations.
+- A documented input boundary, with a test at the owning layer where practical.
+- An explicit design decision explaining why the behavior does not apply.
+
+Review malformed and truncated records, duplicate keys, numeric precision and
+overflow, Unicode and encoding, recursion and size limits, trailing data,
+escaping, timestamp units and precision, and conflicting metadata. Also inspect
+how errors preserve or discard the original record and partially parsed fields.
+
+Do not adopt upstream behavior merely because it exists. For example, replacing
+nested objects with strings can violate our preservation contract. Write our
+expected result before changing implementation, and verify that the regression
+exposes the missing behavior when applicable.
+
+Keep framing separate from normalization. Container envelopes, byte decoding,
+split records, and multiline assembly belong to collectors. The core receives
+one complete UTF-8 record. Findings about those earlier stages must clarify
+integration boundaries rather than silently expand the core's responsibilities.
 
 ## Hypothesis and experiment
+
+Source-derived regressions are in addition to the real-library matrix below.
+For example, reviewing a JSON codec does not replace running Pino with numeric
+and custom string levels, different timestamps, child context, and real errors.
 
 Each scenario specifies a library version, configuration, logging call, and
 expected semantic values. A small producer runs the real library. Capture its
@@ -18,7 +56,9 @@ what correct behavior means.
 ## Two test modes
 
 `cargo test --locked` runs fast tests against checked-in producer output. It
-requires neither Node nor Python. Fixtures include producer provenance.
+requires neither Node nor Python. Fixtures include producer provenance. Fixture refresh replaces machine-specific
+source paths with synthetic paths after verifying fresh output byte-for-byte.
+Fresh-output tests always use the original emitted records.
 
 `python3 compatibility/run.py` installs locked producer dependencies, runs the
 actual producers, and validates their fresh output through the Rust library.
@@ -43,8 +83,10 @@ separately and cannot replace pinned tests.
 | Loguru | Serialized records, bound extras, exceptions, text |
 | Console | Plain messages, Unicode, multiline text |
 
-Every structured producer emits nested data, arrays, booleans, numeric values,
-null, and a unique synthetic scenario marker. Errors are emitted using the
+Structured producers exercise nested data, arrays, booleans, numeric values,
+null, and unique synthetic scenario markers where their format supports them. Where a logger only emits Debug strings for complex values, preserve those
+strings and test its native typed scalar fields separately. Do not reconstruct
+objects the logger never emitted. Errors are emitted using the
 library's real exception support rather than a manually invented error object.
 
 ## Independent preservation checks

@@ -1,0 +1,20 @@
+[package]
+name = "lognorm-fuzz"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+lognorm = { path = ".." }
+serde_json = { version = "1", features = ["arbitrary_precision"] }
+
+[[bin]]
+name = "normalize"
+path = "fuzz_targets/normalize.rs"
+test = false
+doc = false
+bench = false

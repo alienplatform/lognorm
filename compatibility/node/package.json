@@ -1,0 +1,10 @@
+{
+  "name": "lognorm-compatibility-producers",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "pino": "10.4.0",
+    "winston": "3.19.0",
+    "bunyan": "1.8.15"
+  }
+}

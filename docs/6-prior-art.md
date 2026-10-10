@@ -4,6 +4,35 @@ Many tools decode logs, but fewer expose automatic, lossless interpretation as
 a small reusable library. The decision to maintain normalization must be based
 on source-level comparison rather than package descriptions.
 
+## Ongoing source-review method
+
+Prior-art review is part of development, not only an initial dependency survey.
+Read implementations and their tests before adding parsing behavior. Inspect
+Vector's decoding codecs, VRL's parsing functions, and Stanza's JSON, timestamp,
+and severity operators. Follow their calls into shared helpers when those
+helpers determine limits, coercion, precision, or error handling.
+
+For each relevant finding, record:
+
+- The upstream project, pinned commit, and exact implementation or test link.
+- The input condition and observed result, including any data loss or fallback.
+- The intended result here and why it fits the preservation and ambiguity rules.
+- The regression test, integration boundary, or design decision that follows.
+
+Maintain this evidence alongside the relevant tests or numbered specification.
+Distinguish behavior established by reading code from behavior verified by
+running an upstream test or reproducer. Do not claim an entire upstream test
+suite was reviewed after inspecting a few cases.
+
+Create synthetic cases independently. Do not copy upstream source or test
+fixtures without reviewing their license and retaining any required notices.
+No customer data is needed for these experiments.
+
+This work supplements actual logger execution. Codec tests establish robustness
+and expose design tradeoffs; producer tests establish compatibility with real
+library versions and configurations. Both are required by the
+[testing method](4-testing.md).
+
 ## lnav
 
 [lnav](https://github.com/tstack/lnav) is a mature C++ viewer with automatic

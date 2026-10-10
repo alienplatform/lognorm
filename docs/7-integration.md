@@ -33,6 +33,11 @@ queries are both straightforward. Numeric values that cannot be represented by
 the target without loss use an explicit string representation; the adapter
 documents that limitation and retains the original value where possible.
 
+The optional `otlp` feature supplies a protobuf adapter. It represents JSON null
+with an empty AnyValue. Unrepresentable timestamps use OTLP's unspecified zero;
+callers supply their fallback time. Callers also set observed time and own
+resource/scope context, batching, retries, and transport.
+
 ## Presentation and queries
 
 The log list shows normalized body text and severity. The detail panel shows

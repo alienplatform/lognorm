@@ -10,11 +10,14 @@ must preserve data without silently assigning the wrong meaning.
 metadata accessors. Preserve booleans, strings, nulls, arrays, nested objects,
 and numbers. Large integers and decimal representations must not silently lose
 precision. Duplicate keys anywhere in an object cause raw fallback because a
-map cannot represent both values faithfully.
+map cannot represent both values faithfully. Objects containing the decoder's
+reserved `$serde_json::private::Number` key also fall back intact; interpreting
+that key as ordinary data through the arbitrary-precision visitor would be unsafe.
 
 `original()` returns the exact input, including whitespace and control
 characters. Display cleanup may remove ANSI escapes from `message()` but must
-never alter `original()` or values in `fields()`.
+never alter `original()` or values in `fields()`. Oversized input bypasses
+display cleanup as well as decoding so the size limit bounds work.
 
 ## Messages
 
@@ -35,7 +38,8 @@ Recognize common textual levels, case-insensitively, including `warning`,
 `critical`, and Python's level names. Recognize explicit OpenTelemetry numeric
 severity fields on their 1–24 scale. Recognize Python's `levelno` scale. Recognize
 Pino and Bunyan numeric `level` only when the rest of the record supports their
-conventions, such as `msg` and `time`. Loguru exposes textual and numeric level
+conventions, such as `msg` and `time`, or `msg`, `pid`, and `hostname`
+when timestamps are disabled. Loguru exposes textual and numeric level
 information under `record.level`.
 
 Two recognized severities that disagree produce `None`. Unrecognized custom
@@ -57,7 +61,8 @@ produce `None`. No wall clock is consulted by the parser.
 ## Text and failures
 
 Ordinary text is a successful passthrough. JSON arrays and scalar values also
-pass through. Invalid JSON and resource limits have distinct outcomes. None of
+pass through. A leading Unicode BOM is passed through as text rather than
+stripped. Invalid JSON and resource limits have distinct outcomes. None of
 these cases may panic or drop the original input.
 
 Pretty text can be decolorized for display, but structured fields that were

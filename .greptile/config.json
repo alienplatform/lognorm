@@ -1,0 +1,7 @@
+{
+  "strictness": 1,
+  "autoReview": ["open", "push"],
+  "statusCheck": true,
+  "shouldUpdateDescription": false,
+  "instructions": "Read AGENTS.md and docs/ first. Focus on data preservation, numeric precision, duplicate keys, resource limits, ambiguous metadata, and OTLP conversion. Verify compatibility claims against actual producer configurations. Public files must contain no customer data, credentials, private source, or private consumer details."
+}
