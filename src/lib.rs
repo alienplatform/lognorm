@@ -121,7 +121,10 @@ impl Parser {
         Self { max_bytes }
     }
 
-    /// Normalize one complete application record, falling back without panicking.
+    /// Normalize one complete application record, classifying malformed input as fallback.
+    ///
+    /// The byte limit bounds input size, not total allocations. Allocation failure
+    /// and insufficient thread stack are not recoverable parsing outcomes.
     pub fn parse<'a>(&self, input: &'a str) -> ParsedLog<'a> {
         let (fields, outcome) = if input.len() > self.max_bytes {
             (Map::new(), ParseOutcome::InputLimit)

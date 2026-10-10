@@ -117,3 +117,37 @@ Ask for logger, version, configuration, and a sanitized example. Reproduce with
 synthetic values, add a producer scenario that fails, then fix recognition. Keep
 the regression permanently. Never commit customer logs, credentials, internal
 identifiers, or private source excerpts.
+
+## Adversarial transformations and safety
+
+Truncate every structured producer fixture at every UTF-8 character boundary.
+Each incomplete object must retain its exact original input and expose no partial
+fields, severity, or timestamp. This systematically exercises cuts inside keys,
+escapes, numbers, nested values, and real exception records.
+
+Generate alternate decimal and exponent spellings of signed seconds. Compute
+expected nanoseconds independently with integer arithmetic. Test byte limits at
+exactly the record length and one byte below it, including Unicode records.
+Exercise wide arrays, very long numbers, and long incomplete strings below the
+default limit, in addition to deep nesting.
+
+The fuzz target covers parsing, metadata access, OTLP conversion, and protobuf
+encoding. Keep real producer records and synthetic adversarial cases as seeds.
+Random byte mutation alone is unlikely to reach as many valid structured states
+as the separate JSON-generating property tests.
+
+Malformed input is an expected outcome, not a panic. Production source forbids
+unsafe Rust and contains no intentional panic or unchecked unwrap. Timestamp
+arithmetic uses checked operations, and JSON decoding retains its recursion
+limit. These properties reduce failure risk; they do not prove that a process
+cannot crash. Allocation failure, insufficient thread stack, and dependency bugs
+remain possible. The byte limit bounds input size, not total memory consumption;
+decoded trees and OTLP records require additional allocations. Raising the byte
+limit increases that exposure. Caller-side framing and concurrency limits are
+also necessary to control total collector memory.
+
+Do not wrap normal parsing in catch_unwind and call that crash isolation. It
+cannot recover from aborts or process-wide resource exhaustion. See Rust’s
+[allocation failure behavior](https://doc.rust-lang.org/std/alloc/fn.handle_alloc_error.html).
+Keep a minimized
+reproducer for every discovered failure and turn it into a permanent regression.

@@ -9,7 +9,8 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
-lognorm = { path = ".." }
+lognorm = { path = "..", features = ["otlp"] }
+prost = "0.14"
 serde_json = { version = "1", features = ["arbitrary_precision"] }
 
 [[bin]]

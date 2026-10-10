@@ -95,3 +95,29 @@ The target checks exact original input, complete decoded-object equality on
 structured results, and absence of partial fields or metadata on fallback.
 This is a short smoke run, not evidence that all inputs are safe. The checked
 target, seed command, and lockfile support longer reproducible runs.
+
+## Follow-up robustness audit
+
+The expanded suite passes 10,472 truncation boundaries across all 29 structured
+producer fixtures. It checks that incomplete records expose no partial fields or
+metadata. Additional properties exercise wrong JSON types at recognition paths,
+exact byte-limit boundaries, and decimal/exponent seconds against an independent
+integer nanosecond oracle. Wide arrays with 100,001 elements, 100,000-digit
+numbers, long incomplete strings, and default-limit fallback are exercised.
+
+All-feature tests and Clippy pass, including a library-only check denying
+`unwrap_used`, `expect_used`, and explicit `panic`. Production source contains
+no explicit panic, unwrap, expect, or unsafe blocks. This is not proof against
+allocation failure, insufficient stack, or dependency bugs; input limits do not
+bound total process memory.
+
+The fuzz target now includes OTLP conversion and protobuf encoding. A separate
+45-second run with 49 seeds exercised 254,036 inputs without a crash or failed
+assertion; peak sanitizer RSS was 528 MiB. This target performs more work than
+the earlier core-only target, so their execution rates are not comparable.
+
+```sh
+python3 fuzz/seed.py fuzz/corpus/otlp-audit
+cargo fuzz run normalize fuzz/corpus/otlp-audit -- \
+  -max_total_time=45 -max_len=8192 -verbosity=0 -print_final_stats=1
+```

@@ -319,3 +319,30 @@ proptest! {
         prop_assert_eq!(log.original(), colored.as_str());
     }
 }
+
+proptest! {
+    #[test]
+    fn arbitrary_types_at_recognition_paths_preserve_the_complete_record(
+        value in arbitrary_json(),
+        key in prop::sample::select(vec![
+            "msg", "message", "fields", "record", "text", "target", "event",
+            "level", "severity", "severity_number", "levelno", "time", "timestamp",
+            "time_ms", "pid", "hostname",
+        ]),
+    ) {
+        let mut object = json!({
+            "msg": "ready", "level": "INFO", "time": 1700000000123_i64,
+            "target": "example", "fields": {"message": "ready"},
+            "text": "ready", "record": {
+                "message": "ready", "level": {"name": "INFO", "no": 20},
+                "time": {"timestamp": 1700000000.123}
+            }
+        });
+        object[key] = value;
+        let input = object.to_string();
+        let log = parse(&input);
+        prop_assert_eq!(log.outcome(), ParseOutcome::Structured);
+        prop_assert_eq!(Value::Object(log.fields().clone()), object);
+        prop_assert_eq!(log.original(), input.as_str());
+    }
+}
