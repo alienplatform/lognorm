@@ -45,9 +45,13 @@ display cleanup as well as decoding so the size limit bounds work.
 ## Messages
 
 Recognize string `msg` and `message` fields. Recognize `fields.message` in a
-tracing envelope. Recognize structlog's string `event` when logger metadata
-supports that interpretation. Recognize `record.message` in serialized Loguru.
+tracing envelope. Recognize `record.message` in serialized Loguru.
 Recognize hclog's `@message` alongside a known textual `@level`.
+
+structlog writes its message as a string `event` with a known textual `level`
+and no other message field. Use `event` only in that case. Beside a recognized
+message, `event` is an application field, such as `event = "close"` on a
+flattened tracing record, and does not compete with the message.
 A nested tracing message requires a known textual `level` plus either a string
 `target` or a valid RFC3339 `timestamp`. Disabling both target and time removes
 that signature; preserve the fields without guessing the nested message.

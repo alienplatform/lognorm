@@ -93,6 +93,35 @@ fn conflicting_metadata_is_not_guessed() {
 }
 
 #[test]
+fn event_is_the_message_only_without_another_message_field() {
+    // An application field named `event` beside a message field.
+    let flat = r#"{"timestamp":"2026-11-05T15:02:06.876274Z","level":"INFO","message":"egress connection","event":"close","decision":"deny","target":"egress::server"}"#;
+    let log = parse(flat);
+    assert_eq!(log.message(), "egress connection");
+    assert_eq!(log.severity(), Some(Severity::Info));
+    assert_eq!(log.timestamp(), Timestamp::new(1793890926, 876274000));
+    assert_eq!(log.fields()["event"], "close");
+    assert_eq!(log.fields().len(), 6);
+
+    let msg = r#"{"msg":"ready","event":"started","level":"info"}"#;
+    assert_eq!(parse(msg).message(), "ready");
+
+    // structlog writes its message as `event`, with no other message field.
+    let structlog = r#"{"event":"user logged in","level":"warning","timestamp":"2026-11-05T15:02:06Z"}"#;
+    let log = parse(structlog);
+    assert_eq!(log.message(), "user logged in");
+    assert_eq!(log.severity(), Some(Severity::Warn));
+
+    // Without a known level, `event` stays an ordinary field.
+    let unknown = r#"{"event":"close","level":"custom"}"#;
+    assert_eq!(parse(unknown).message(), unknown);
+
+    // Message fields that disagree still fall back, whatever `event` says.
+    let conflicting = r#"{"msg":"one","message":"two","event":"two","level":"info"}"#;
+    assert_eq!(parse(conflicting).message(), conflicting);
+}
+
+#[test]
 fn numeric_levels_require_known_scale() {
     assert_eq!(parse(r#"{"level":30,"quantity":8}"#).severity(), None);
     assert_eq!(
