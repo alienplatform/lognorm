@@ -107,7 +107,8 @@ fn event_is_the_message_only_without_another_message_field() {
     assert_eq!(parse(msg).message(), "ready");
 
     // structlog writes its message as `event`, with no other message field.
-    let structlog = r#"{"event":"user logged in","level":"warning","timestamp":"2026-11-05T15:02:06Z"}"#;
+    let structlog =
+        r#"{"event":"user logged in","level":"warning","timestamp":"2026-11-05T15:02:06Z"}"#;
     let log = parse(structlog);
     assert_eq!(log.message(), "user logged in");
     assert_eq!(log.severity(), Some(Severity::Warn));

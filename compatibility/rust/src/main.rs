@@ -29,7 +29,10 @@ fn main() {
         .with_ansi(false);
     if scenario == "tracing-text" {
         base.without_time().init();
-    } else if matches!(scenario.as_str(), "tracing-flat" | "tracing-flat-span" | "tracing-flat-event") {
+    } else if matches!(
+        scenario.as_str(),
+        "tracing-flat" | "tracing-flat-span" | "tracing-flat-event"
+    ) {
         base.json().flatten_event(true).init();
     } else if scenario == "tracing-no-target" {
         base.json().with_target(false).init();

@@ -575,6 +575,21 @@
   },
   {
     "runtime": "rust",
+    "scenario": "tracing-flat-event",
+    "expected": {
+      "message": "example tracing-flat-event",
+      "severity": "WARN",
+      "structured": true,
+      "timestamp": true,
+      "payloadPath": [
+        "payload"
+      ],
+      "payloadIsString": true
+    },
+    "input": "{\"timestamp\":\"2026-11-07T22:16:43.072812Z\",\"level\":\"WARN\",\"message\":\"example tracing-flat-event\",\"scenario\":\"tracing-flat-event\",\"event\":\"close\",\"payload\":\"Object {\\\"enabled\\\": Bool(true), \\\"items\\\": Array [Bool(true), Null, Number(7), String(\\\"λ\\\")], \\\"nested\\\": Object {\\\"path\\\": String(\\\"/example\\\"), \\\"statusCode\\\": Number(401)}}\",\"status_code\":401,\"enabled\":true,\"target\":\"lognorm_compatibility_producers\"}"
+  },
+  {
+    "runtime": "rust",
     "scenario": "tracing-text",
     "expected": {
       "message": "example tracing-text",

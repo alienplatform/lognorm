@@ -30,7 +30,7 @@ fn same_json(left: &Value, right: &Value) -> bool {
 fn checked_real_library_records_retain_message_metadata_and_fields() {
     let cases: Vec<Value> =
         serde_json::from_str(include_str!("../compatibility/fixtures.json")).unwrap();
-    assert_eq!(cases.len(), 43);
+    assert_eq!(cases.len(), 44);
     for case in cases {
         let name = case["scenario"].as_str().unwrap();
         let input = case["input"].as_str().unwrap();
