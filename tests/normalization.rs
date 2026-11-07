@@ -95,9 +95,9 @@ fn conflicting_metadata_is_not_guessed() {
 #[test]
 fn event_is_the_message_only_without_another_message_field() {
     // An application field named `event` beside a message field.
-    let flat = r#"{"timestamp":"2026-11-05T15:02:06.876274Z","level":"INFO","message":"egress connection","event":"close","decision":"deny","target":"egress::server"}"#;
+    let flat = r#"{"timestamp":"2026-11-05T15:02:06.876274Z","level":"INFO","message":"connection closed","event":"close","decision":"deny","target":"proxy::server"}"#;
     let log = parse(flat);
-    assert_eq!(log.message(), "egress connection");
+    assert_eq!(log.message(), "connection closed");
     assert_eq!(log.severity(), Some(Severity::Info));
     assert_eq!(log.timestamp(), Timestamp::new(1793890926, 876274000));
     assert_eq!(log.fields()["event"], "close");
