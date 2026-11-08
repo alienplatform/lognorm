@@ -44,7 +44,7 @@ fn pino(fields: &Map<String, Value>) -> bool {
 }
 
 pub(crate) fn message_path(fields: &Map<String, Value>) -> Option<Path> {
-    let candidates: [(Path, bool); 6] = [
+    let candidates: [(Path, bool); 5] = [
         (&["msg"], true),
         (&["message"], true),
         (
@@ -57,14 +57,6 @@ pub(crate) fn message_path(fields: &Map<String, Value>) -> Option<Path> {
         ),
         (&["fields", "message"], tracing(fields)),
         (&["record", "message"], loguru(fields)),
-        (
-            &["event"],
-            fields
-                .get("level")
-                .and_then(Value::as_str)
-                .and_then(severity::name)
-                .is_some(),
-        ),
     ];
 
     let mut selected = None;
@@ -81,7 +73,23 @@ pub(crate) fn message_path(fields: &Map<String, Value>) -> Option<Path> {
             message = Some(value);
         }
     }
-    selected
+    if selected.is_some() {
+        return selected;
+    }
+    // structlog writes its message as `event` and has no other message field.
+    // Beside a message field, `event` is an application field, such as
+    // `event = "close"` on a tracing record.
+    const EVENT: Path = &["event"];
+    structlog(fields).then_some(EVENT)
+}
+
+fn structlog(fields: &Map<String, Value>) -> bool {
+    fields.get("event").is_some_and(Value::is_string)
+        && fields
+            .get("level")
+            .and_then(Value::as_str)
+            .and_then(severity::name)
+            .is_some()
 }
 
 struct Consensus<T> {

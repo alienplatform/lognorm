@@ -81,6 +81,7 @@ def scenarios():
             "tracing-no-time",
             "tracing-no-target",
             "tracing-flat-span",
+            "tracing-flat-event",
             "tracing-text",
             "env-logger-text",
         ],
@@ -99,6 +100,7 @@ def scenarios():
             if name.startswith("tracing-") and name not in [
                 "tracing-flat",
                 "tracing-flat-span",
+                "tracing-flat-event",
             ]:
                 payload_path = ["fields", "payload"]
             has_time = name.startswith(
@@ -201,12 +203,14 @@ def verify(case, normalized):
         if name.startswith("tracing-"):
             scalar_fields = (
                 source
-                if name in ["tracing-flat", "tracing-flat-span"]
+                if name in ["tracing-flat", "tracing-flat-span", "tracing-flat-event"]
                 else source["fields"]
             )
             assert (
                 scalar_fields["status_code"] == 401 and scalar_fields["enabled"] is True
             ), name
+        if name == "tracing-flat-event":
+            assert source["event"] == "close", name
         if name.endswith("-error"):
             assert "synthetic failure" in raw or name == "winston-error", (
                 name,
