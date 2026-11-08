@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1](https://github.com/alienplatform/lognorm/compare/v0.2.0...v0.2.1) - 2026-11-08
+
+### Fixed
+
+- use event as the message only when no other message field exists ([#6](https://github.com/alienplatform/lognorm/pull/6))
+
 ## [0.2.0](https://github.com/alienplatform/lognorm/compare/v0.1.0...v0.2.0) - 2026-10-10
 
 ### Fixed
